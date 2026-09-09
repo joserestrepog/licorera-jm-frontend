@@ -1,5 +1,185 @@
-<div class="dashboard-page">
-  <h1>Dashboard</h1>
+<div class="dashboard-layout">
+  <app-sidebar></app-sidebar>
 
-  <p>Bienvenido a Licorera JM</p>
+  <div class="dashboard-main">
+    <app-topbar></app-topbar>
+
+    <main class="dashboard-content">
+      <div class="welcome-section">
+        <h2>Bienvenido a Licorera JM</h2>
+        <p>Resumen general de las operaciones de tu licorera.</p>
+      </div>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-icon">▣</div>
+
+          <div class="stat-info">
+            <span class="stat-label">Productos activos</span>
+            <strong class="stat-value">{{ activeProducts }}</strong>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon">▤</div>
+
+          <div class="stat-info">
+            <span class="stat-label">Stock disponible</span>
+            <strong class="stat-value">{{ totalStock }}</strong>
+            <span class="stat-description">unidades en inventario</span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon warning">!</div>
+
+          <div class="stat-info">
+            <span class="stat-label">Stock bajo</span>
+            <strong class="stat-value">{{ lowStockProducts.length }}</strong>
+            <span class="stat-description">productos requieren atención</span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon sales">$</div>
+
+          <div class="stat-info">
+            <span class="stat-label">Ventas del día</span>
+            <strong class="stat-value">
+              {{ todaySales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+            </strong>
+            <span class="stat-description"> {{ todaySalesCount }} ventas completadas </span>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon" [class.warning]="!currentCashRegister">$</div>
+
+          <div class="stat-info">
+            @if (currentCashRegister) {
+              <span class="stat-label">Caja</span>
+
+              <strong class="stat-value">
+                {{ currentCashRegister.totalSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+
+              <span class="stat-description">
+                Caja abierta · {{ currentCashRegister.username }}
+              </span>
+            } @else {
+              <span class="stat-label">Caja</span>
+
+              <strong class="stat-value"> Cerrada </strong>
+
+              <span class="stat-description"> No hay una caja abierta </span>
+            }
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-section">
+        <div class="section-header">
+          <div>
+            <h3>Productos con stock bajo</h3>
+            <p>Productos que se encuentran en el mínimo establecido o por debajo.</p>
+          </div>
+        </div>
+
+        @if (lowStockProducts.length > 0) {
+          <div class="low-stock-list">
+            @for (product of lowStockProducts; track product.id) {
+              <div class="low-stock-item">
+                <div class="product-info">
+                  <span class="product-name">
+                    {{ product.name }}
+                  </span>
+
+                  <span class="product-category">
+                    {{ product.categoryName }}
+                  </span>
+                </div>
+
+                <div class="stock-info">
+                  <span class="current-stock"> {{ product.currentStock }} unidades </span>
+
+                  <span class="minimum-stock"> Mínimo: {{ product.minimumStock }} </span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <span class="empty-icon">✓</span>
+
+            <div>
+              <strong>Inventario en buen estado</strong>
+              <p>No hay productos con stock bajo actualmente.</p>
+            </div>
+          </div>
+        }
+      </section>
+      <section class="dashboard-section recent-sales-section">
+        <div class="section-header">
+          <div>
+            <h3>Ventas recientes</h3>
+            <p>Últimas ventas registradas en la licorera.</p>
+          </div>
+        </div>
+
+        @if (recentSales.length > 0) {
+          <div class="recent-sales-table">
+            <div class="recent-sales-row recent-sales-header">
+              <span>Venta</span>
+              <span>Fecha</span>
+              <span>Usuario</span>
+              <span>Total</span>
+              <span>Estado</span>
+            </div>
+
+            @for (sale of recentSales; track sale.id) {
+              <div class="recent-sales-row">
+                <span class="sale-number"> #{{ sale.saleNumber }} </span>
+
+                <span class="sale-date">
+                  {{ sale.saleDate | date: 'dd/MM/yyyy HH:mm' }}
+                </span>
+
+                <span class="sale-user">
+                  {{ sale.username }}
+                </span>
+
+                <span class="sale-total">
+                  {{ sale.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                </span>
+
+                <span
+                  class="sale-status"
+                  [class.completed]="sale.status === 'COMPLETED'"
+                  [class.cancelled]="sale.status === 'CANCELLED'"
+                  [class.pending]="sale.status === 'PENDING'"
+                >
+                  @if (sale.status === 'COMPLETED') {
+                    Completada
+                  } @else if (sale.status === 'CANCELLED') {
+                    Cancelada
+                  } @else {
+                    Pendiente
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">
+            <span class="empty-icon">▤</span>
+
+            <div>
+              <strong>No hay ventas recientes</strong>
+              <p>Aún no se han registrado ventas en la licorera.</p>
+            </div>
+          </div>
+        }
+      </section>
+    </main>
+  </div>
 </div>

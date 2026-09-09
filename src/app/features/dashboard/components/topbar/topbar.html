@@ -1,0 +1,34 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="page-title">
+      <span class="title-accent"></span>
+
+      <div>
+        <h1>Dashboard</h1>
+        <p>Resumen general de Licorera JM</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    @if (currentUser) {
+      <div class="user-status">
+        <span class="status-dot"></span>
+
+        <div class="user-info">
+          <span class="user-name">
+            {{ currentUser.username }}
+          </span>
+
+          <span class="user-role">
+            {{ currentUser.role }}
+          </span>
+        </div>
+      </div>
+
+      <div class="user-avatar">
+        {{ userInitial }}
+      </div>
+    }
+  </div>
+</header>

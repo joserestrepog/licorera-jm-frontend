@@ -1,0 +1,75 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <img src="/images/logo-licorera-jm.png" alt="Licorera JM" class="sidebar-logo" />
+
+    <div class="brand-text">
+      <span class="brand-name">Licorera JM</span>
+      <span class="brand-subtitle">Sistema de gestión</span>
+    </div>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <nav class="sidebar-nav">
+    <span class="nav-section-title">Principal</span>
+
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-item"
+    >
+      <span class="nav-icon">⌂</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a routerLink="/sales" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">▣</span>
+      <span>Ventas</span>
+    </a>
+
+    <a routerLink="/inventory" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">▤</span>
+      <span>Inventario</span>
+    </a>
+
+    <a routerLink="/products" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">□</span>
+      <span>Productos</span>
+    </a>
+
+    <a routerLink="/categories" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">▦</span>
+      <span>Categorías</span>
+    </a>
+
+    <a routerLink="/cash-register" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">$</span>
+      <span>Caja</span>
+    </a>
+
+    <span class="nav-section-title">Administración</span>
+
+    <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">▥</span>
+      <span>Reportes</span>
+    </a>
+
+    <a routerLink="/users" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">♙</span>
+      <span>Usuarios</span>
+    </a>
+
+    <a routerLink="/backups" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">↻</span>
+      <span>Respaldos</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button type="button" class="logout-button" (click)="logout()">
+      <span class="nav-icon">↪</span>
+      <span>Cerrar sesión</span>
+    </button>
+  </div>
+</aside>
