@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest } from '../../models/login-request.model';
@@ -14,6 +15,7 @@ import { LoginRequest } from '../../models/login-request.model';
 export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   loginRequest: LoginRequest = {
     username: '',
@@ -44,8 +46,8 @@ export class LoginComponent {
     }
 
     this.authService.login(this.loginRequest).subscribe({
-      next: (response) => {
-        console.log('Login exitoso:', response);
+      next: () => {
+        this.router.navigate(['/dashboard']);
       },
 
       error: (error) => {
