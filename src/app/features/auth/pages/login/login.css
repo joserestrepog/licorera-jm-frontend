@@ -594,3 +594,14 @@ button:active {
     width: 35px;
   }
 }
+
+.login-alert {
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(180, 45, 45, 0.35);
+  border-radius: 8px;
+  background: rgba(180, 45, 45, 0.08);
+  color: #b52b2b;
+  font-size: 14px;
+  text-align: center;
+}

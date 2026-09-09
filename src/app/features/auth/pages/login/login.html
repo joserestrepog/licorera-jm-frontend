@@ -75,6 +75,12 @@
         </div>
       </div>
 
+      @if (errorMessage) {
+        <div class="login-alert" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
+
       <!-- BOTÓN -->
       <button type="submit">
         <span class="button-icon">→</span>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../services/auth.service';
@@ -13,6 +13,7 @@ import { LoginRequest } from '../../models/login-request.model';
 })
 export class LoginComponent {
   private readonly authService = inject(AuthService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
 
   loginRequest: LoginRequest = {
     username: '',
@@ -23,17 +24,38 @@ export class LoginComponent {
 
   passwordVisible = false;
 
+  errorMessage = '';
+
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
   }
 
   login(): void {
+    this.errorMessage = '';
+
+    if (!this.loginRequest.username.trim()) {
+      this.errorMessage = 'Ingresa tu usuario';
+      return;
+    }
+
+    if (!this.loginRequest.password.trim()) {
+      this.errorMessage = 'Ingresa tu contraseña';
+      return;
+    }
+
     this.authService.login(this.loginRequest).subscribe({
       next: (response) => {
         console.log('Login exitoso:', response);
       },
+
       error: (error) => {
         console.error('Error en login:', error);
+
+        this.errorMessage = 'Usuario o contraseña incorrectos';
+
+        this.changeDetectorRef.detectChanges();
+
+        console.log('Mensaje asignado:', this.errorMessage);
       },
     });
   }
