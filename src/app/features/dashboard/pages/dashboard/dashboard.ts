@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { Sidebar } from '../../components/sidebar/sidebar';
@@ -24,6 +24,7 @@ import { CashRegister } from '../../../cash-register/models/cash-register.model'
 })
 export class DashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly productService = inject(ProductService);
   private readonly saleService = inject(SaleService);
   private readonly cashRegisterService = inject(CashRegisterService);
@@ -65,6 +66,7 @@ export class DashboardComponent implements OnInit {
         this.lowStockProducts = activeProducts.filter(
           (product) => product.currentStock <= product.minimumStock,
         );
+        this.changeDetectorRef.detectChanges();
       },
       error: (error) => {
         console.error('Error al cargar productos:', error);
@@ -91,6 +93,7 @@ export class DashboardComponent implements OnInit {
 
         this.todaySalesCount = todayCompletedSales.length;
         this.todaySales = todayCompletedSales.reduce((total, sale) => total + sale.total, 0);
+        this.changeDetectorRef.detectChanges();
       },
       error: (error) => console.error('Error al cargar ventas:', error),
     });
@@ -113,6 +116,7 @@ export class DashboardComponent implements OnInit {
             (cashRegister) =>
               cashRegister.username === currentUser.username && cashRegister.status === 'OPEN',
           ) ?? null;
+        this.changeDetectorRef.detectChanges();
       },
       error: (error) => {
         console.error('Error al cargar cajas:', error);
