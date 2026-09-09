@@ -9,16 +9,23 @@ import { LoginRequest } from '../../models/login-request.model';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrl: './login.css',
 })
 export class LoginComponent {
-
   private readonly authService = inject(AuthService);
 
   loginRequest: LoginRequest = {
     username: '',
-    password: ''
+    password: '',
   };
+
+  currentYear = new Date().getFullYear();
+
+  passwordVisible = false;
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
   login(): void {
     this.authService.login(this.loginRequest).subscribe({
@@ -27,7 +34,7 @@ export class LoginComponent {
       },
       error: (error) => {
         console.error('Error en login:', error);
-      }
+      },
     });
   }
 }

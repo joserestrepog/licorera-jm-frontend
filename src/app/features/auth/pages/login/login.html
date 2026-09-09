@@ -1,34 +1,95 @@
-<div>
-  <h1>Licorera JM</h1>
-  <h2>Iniciar sesión</h2>
-
-  <form (ngSubmit)="login()">
-
-    <div>
-      <label for="username">Usuario</label>
-      <input
-        id="username"
-        type="text"
-        name="username"
-        [(ngModel)]="loginRequest.username"
-        required
-      />
+<div class="login-page">
+  <div class="login-card">
+    <!-- LOGO -->
+    <div class="brand">
+      <img src="/images/logo-licorera-jm.png" alt="Licorera JM" class="logo" />
     </div>
 
-    <div>
-      <label for="password">Contraseña</label>
-      <input
-        id="password"
-        type="password"
-        name="password"
-        [(ngModel)]="loginRequest.password"
-        required
-      />
+    <!-- SEPARADOR -->
+    <div class="gold-line"></div>
+
+    <!-- ENCABEZADO -->
+    <div class="login-header">
+      <h2>Iniciar sesión</h2>
+
+      <p>Ingresa tus credenciales para continuar</p>
     </div>
 
-    <button type="submit">
-      Ingresar
-    </button>
+    <!-- FORMULARIO -->
+    <form (ngSubmit)="login()">
+      <!-- USUARIO -->
+      <div class="form-group">
+        <label for="username">
+          <span class="field-icon">♙</span>
+          Usuario
+        </label>
 
-  </form>
+        <input
+          id="username"
+          type="text"
+          name="username"
+          placeholder="Ingresa tu usuario"
+          [(ngModel)]="loginRequest.username"
+          required
+        />
+      </div>
+
+      <!-- CONTRASEÑA -->
+      <div class="form-group">
+        <label for="password">
+          <span class="field-icon">♙</span>
+          Contraseña
+        </label>
+
+        <div class="password-wrapper">
+          <input
+            id="password"
+            [type]="passwordVisible ? 'text' : 'password'"
+            name="password"
+            placeholder="Ingresa tu contraseña"
+            [(ngModel)]="loginRequest.password"
+            required
+          />
+
+          <button
+            type="button"
+            class="password-eye"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            @if (passwordVisible) {
+              <!-- Ojo abierto -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                <circle cx="12" cy="12" r="2.8" />
+              </svg>
+            } @else {
+              <!-- Ojo cerrado -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3l18 18" />
+                <path d="M10.6 6.2A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-3.1 3.8" />
+                <path d="M6.1 8.1C3.9 9.6 2.5 12 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1" />
+              </svg>
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- BOTÓN -->
+      <button type="submit">
+        <span class="button-icon">→</span>
+
+        Ingresar
+      </button>
+    </form>
+
+    <!-- FOOTER -->
+    <div class="login-footer">
+      <span></span>
+
+      <p>© {{ currentYear }} Licorera JM</p>
+
+      <span></span>
+    </div>
+  </div>
 </div>
