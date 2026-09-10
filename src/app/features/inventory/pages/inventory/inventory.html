@@ -1,0 +1,415 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="inventory-page">
+      <div class="page-header">
+        <div>
+          <h1>Inventario</h1>
+          <p>Gestiona las entradas y existencias de productos.</p>
+        </div>
+
+        <button type="button" class="primary-button" (click)="openNewEntryForm()">
+          Nueva entrada
+        </button>
+      </div>
+
+      <!-- FORMULARIO NUEVA ENTRADA -->
+      @if (showNewEntryForm) {
+        <section class="new-entry-card">
+          <div class="card-header">
+            <div>
+              <h2>Nueva entrada de inventario</h2>
+              <p>Busca un producto existente o registra uno nuevo mediante su código de barras.</p>
+            </div>
+
+            <button type="button" class="close-button" (click)="closeNewEntryForm()">✕</button>
+          </div>
+
+          <form [formGroup]="inventoryForm" (ngSubmit)="saveNewEntry()">
+            <!-- CÓDIGO DE BARRAS -->
+            <div class="barcode-section">
+              <div class="form-group barcode-group">
+                <label for="barcode">Código de barras</label>
+
+                <div class="barcode-input-row">
+                  <input
+                    #barcodeInput
+                    id="barcode"
+                    type="text"
+                    formControlName="barcode"
+                    placeholder="Escanea o escribe el código"
+                    autocomplete="off"
+                    (keydown.enter)="$event.preventDefault(); searchProductByBarcode()"
+                  />
+
+                  <button
+                    type="button"
+                    class="secondary-button"
+                    (click)="searchProductByBarcode()"
+                    [disabled]="isSearchingProduct"
+                  >
+                    @if (isSearchingProduct) {
+                      Buscando...
+                    } @else {
+                      Buscar
+                    }
+                  </button>
+                </div>
+
+                @if (
+                  inventoryForm.controls.barcode.invalid && inventoryForm.controls.barcode.touched
+                ) {
+                  <span class="error-message"> El código de barras es obligatorio. </span>
+                }
+              </div>
+            </div>
+
+            <!-- ESTADO DEL PRODUCTO -->
+            @if (productExists) {
+              <div class="product-status existing">
+                <span class="status-icon">✓</span>
+                <div>
+                  <strong>Producto encontrado</strong>
+                  <p>La información del producto se cargó automáticamente.</p>
+                </div>
+              </div>
+            } @else if (
+              inventoryForm.controls.name.enabled && inventoryForm.controls.barcode.value
+            ) {
+              <div class="product-status new">
+                <span class="status-icon">+</span>
+                <div>
+                  <strong>Producto nuevo</strong>
+                  <p>Completa la información del producto para registrarlo.</p>
+                </div>
+              </div>
+            }
+
+            <!-- INFORMACIÓN DEL PRODUCTO -->
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información del producto</h3>
+              </div>
+
+              <div class="form-grid">
+                <!-- NOMBRE -->
+                <div class="form-group">
+                  <label for="name">Nombre del producto</label>
+
+                  <input
+                    id="name"
+                    type="text"
+                    formControlName="name"
+                    placeholder="Nombre del producto"
+                  />
+
+                  @if (inventoryForm.controls.name.invalid && inventoryForm.controls.name.touched) {
+                    <span class="error-message"> El nombre es obligatorio. </span>
+                  }
+                </div>
+
+                <!-- CATEGORÍA -->
+                <div class="form-group">
+                  <label for="categoryId">Categoría</label>
+
+                  <select id="categoryId" formControlName="categoryId">
+                    <option [ngValue]="0">Selecciona una categoría</option>
+
+                    @for (category of categories; track category.id) {
+                      <option [ngValue]="category.id">
+                        {{ category.name }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (
+                    inventoryForm.controls.categoryId.invalid &&
+                    inventoryForm.controls.categoryId.touched
+                  ) {
+                    <span class="error-message"> Selecciona una categoría. </span>
+                  }
+                </div>
+
+                <!-- PROVEEDOR -->
+                <div class="form-group">
+                  <label for="provider">Proveedor</label>
+
+                  <input
+                    id="provider"
+                    type="text"
+                    formControlName="provider"
+                    placeholder="Proveedor"
+                  />
+                </div>
+
+                <!-- PRECIO COMPRA -->
+                <div class="form-group">
+                  <label for="purchasePrice">Precio de compra</label>
+
+                  <input
+                    id="purchasePrice"
+                    type="number"
+                    formControlName="purchasePrice"
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    inventoryForm.controls.purchasePrice.invalid &&
+                    inventoryForm.controls.purchasePrice.touched
+                  ) {
+                    <span class="error-message"> Ingresa un precio válido. </span>
+                  }
+                </div>
+
+                <!-- PRECIO VENTA -->
+                <div class="form-group">
+                  <label for="salePrice">Precio de venta</label>
+
+                  <input
+                    id="salePrice"
+                    type="number"
+                    formControlName="salePrice"
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    inventoryForm.controls.salePrice.invalid &&
+                    inventoryForm.controls.salePrice.touched
+                  ) {
+                    <span class="error-message"> Ingresa un precio válido. </span>
+                  }
+                </div>
+
+                <!-- STOCK MÍNIMO -->
+                <div class="form-group">
+                  <label for="minimumStock">Stock mínimo</label>
+
+                  <input
+                    id="minimumStock"
+                    type="number"
+                    formControlName="minimumStock"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- INFORMACIÓN DE LA ENTRADA -->
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información de la entrada</h3>
+              </div>
+
+              <div class="form-grid">
+                <!-- CANTIDAD -->
+                <div class="form-group">
+                  <label for="quantity">Cantidad a ingresar</label>
+
+                  <input
+                    id="quantity"
+                    type="number"
+                    formControlName="quantity"
+                    min="1"
+                    step="1"
+                    placeholder="Cantidad"
+                  />
+
+                  @if (
+                    inventoryForm.controls.quantity.invalid &&
+                    inventoryForm.controls.quantity.touched
+                  ) {
+                    <span class="error-message"> La cantidad debe ser mayor que cero. </span>
+                  }
+                </div>
+
+                <!-- OBSERVACIÓN -->
+                <div class="form-group form-group-full">
+                  <label for="notes">Observación</label>
+
+                  <textarea
+                    id="notes"
+                    formControlName="notes"
+                    rows="3"
+                    maxlength="255"
+                    placeholder="Observación opcional"
+                  >
+                  </textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeNewEntryForm()">
+                Cancelar
+              </button>
+
+              <button type="submit" class="primary-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Registrando...
+                } @else {
+                  Registrar entrada
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      <!-- HISTORIAL DE ENTRADAS -->
+      <section class="inventory-card">
+        <div class="card-header">
+          <div>
+            <h2>Entradas de inventario</h2>
+            <p>Historial de productos ingresados al inventario.</p>
+          </div>
+        </div>
+
+        @if (entries.length === 0) {
+          <div class="empty-state">
+            <span>📦</span>
+            <h3>No hay entradas de inventario</h3>
+            <p>Aún no se han registrado entradas.</p>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Código</th>
+                  <th>Cantidad</th>
+                  <th>Precio compra</th>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (entry of entries; track entry.id) {
+                  <tr>
+                    <td>{{ entry.productName }}</td>
+
+                    <td>{{ entry.barcode }}</td>
+
+                    <td>{{ entry.quantity }}</td>
+
+                    <td>
+                      {{ entry.purchasePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                    </td>
+
+                    <td>
+                      {{ entry.entryDate | date: 'dd/MM/yyyy HH:mm' }}
+                    </td>
+
+                    <td>{{ entry.username }}</td>
+
+                    <td>
+                      <button
+                        type="button"
+                        class="action-button view-button"
+                        title="Ver entrada"
+                        (click)="openEntryDetail(entry)"
+                      >
+                        👁️
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>
+
+@if (selectedEntry) {
+  <div class="modal-overlay" (click)="closeEntryDetail()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Detalle de entrada</h2>
+          <p>Información de la entrada de inventario.</p>
+        </div>
+
+        <button type="button" class="close-button" title="Cerrar" (click)="closeEntryDetail()">
+          ✕
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Producto</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+              <strong>{{ selectedEntry.productName }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Código de barras</span>
+              <strong>{{ selectedEntry.barcode }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Información de la entrada</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Cantidad</span>
+              <strong>{{ selectedEntry.quantity }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Precio de compra</span>
+              <strong>
+                {{ selectedEntry.purchasePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Fecha</span>
+              <strong>
+                {{ selectedEntry.entryDate | date: 'dd/MM/yyyy HH:mm' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Usuario</span>
+              <strong>{{ selectedEntry.username }}</strong>
+            </div>
+          </div>
+        </div>
+
+        @if (selectedEntry.notes) {
+          <div class="detail-section">
+            <h3>Observación</h3>
+
+            <div class="notes-box">
+              {{ selectedEntry.notes }}
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-button" (click)="closeEntryDetail()">Cerrar</button>
+      </div>
+    </section>
+  </div>
+}

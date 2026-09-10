@@ -13,6 +13,12 @@ export const routes: Routes = [
       import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
   {
+    path: 'inventory',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/inventory/pages/inventory/inventory').then((m) => m.InventoryComponent),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
