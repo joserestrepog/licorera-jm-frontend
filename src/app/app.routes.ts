@@ -19,6 +19,12 @@ export const routes: Routes = [
       import('./features/inventory/pages/inventory/inventory').then((m) => m.InventoryComponent),
   },
   {
+    path: 'products',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/products/pages/products/products').then((m) => m.ProductsComponent),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',

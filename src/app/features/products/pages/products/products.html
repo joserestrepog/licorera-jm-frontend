@@ -1,0 +1,466 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="products-page">
+      <!-- ENCABEZADO -->
+
+      <div class="page-header">
+        <div>
+          <h1>Productos</h1>
+          <p>Administra los productos y consulta sus existencias.</p>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="search"> Buscar producto </label>
+
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nombre, código o proveedor"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="categoryFilter"> Categoría </label>
+
+          <select
+            id="categoryFilter"
+            [(ngModel)]="selectedCategoryId"
+            (ngModelChange)="onCategoryChange()"
+          >
+            <option [ngValue]="0">Todas las categorías</option>
+
+            @for (category of categories; track category.id) {
+              <option [ngValue]="category.id">
+                {{ category.name }}
+              </option>
+            }
+          </select>
+        </div>
+      </section>
+
+      <!-- FORMULARIO -->
+
+      @if (showProductForm) {
+        <section class="product-form-card">
+          <div class="card-header">
+            <div>
+              <h2>
+                {{ isEditing ? 'Editar producto' : 'Nuevo producto' }}
+              </h2>
+
+              <p>
+                {{
+                  isEditing
+                    ? 'Actualiza la información del producto.'
+                    : 'Registra un nuevo producto en el sistema.'
+                }}
+              </p>
+            </div>
+
+            <button type="button" class="close-button" title="Cerrar" (click)="closeProductForm()">
+              ✕
+            </button>
+          </div>
+
+          <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+            <!-- INFORMACIÓN GENERAL -->
+
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información general</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="barcode"> Código de barras </label>
+
+                  <input
+                    id="barcode"
+                    type="text"
+                    formControlName="barcode"
+                    placeholder="Código de barras"
+                    autocomplete="off"
+                  />
+
+                  @if (
+                    productForm.controls.barcode.invalid && productForm.controls.barcode.touched
+                  ) {
+                    <span class="error-message"> El código de barras es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="name"> Nombre del producto </label>
+
+                  <input
+                    id="name"
+                    type="text"
+                    formControlName="name"
+                    placeholder="Nombre del producto"
+                  />
+
+                  @if (productForm.controls.name.invalid && productForm.controls.name.touched) {
+                    <span class="error-message"> El nombre del producto es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="categoryId"> Categoría </label>
+
+                  <select id="categoryId" formControlName="categoryId">
+                    <option [ngValue]="0">Selecciona una categoría</option>
+
+                    @for (category of categories; track category.id) {
+                      <option [ngValue]="category.id">
+                        {{ category.name }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (
+                    productForm.controls.categoryId.invalid &&
+                    productForm.controls.categoryId.touched
+                  ) {
+                    <span class="error-message"> Selecciona una categoría. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="provider"> Proveedor </label>
+
+                  <input
+                    id="provider"
+                    type="text"
+                    formControlName="provider"
+                    placeholder="Proveedor"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- PRECIOS -->
+
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Precios e inventario</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="purchasePrice"> Precio de compra </label>
+
+                  <input
+                    id="purchasePrice"
+                    type="number"
+                    formControlName="purchasePrice"
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    productForm.controls.purchasePrice.invalid &&
+                    productForm.controls.purchasePrice.touched
+                  ) {
+                    <span class="error-message"> Ingresa un precio de compra válido. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="salePrice"> Precio de venta </label>
+
+                  <input
+                    id="salePrice"
+                    type="number"
+                    formControlName="salePrice"
+                    min="0"
+                    step="100"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    productForm.controls.salePrice.invalid && productForm.controls.salePrice.touched
+                  ) {
+                    <span class="error-message"> Ingresa un precio de venta válido. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="minimumStock"> Stock mínimo </label>
+
+                  <input
+                    id="minimumStock"
+                    type="number"
+                    formControlName="minimumStock"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    productForm.controls.minimumStock.invalid &&
+                    productForm.controls.minimumStock.touched
+                  ) {
+                    <span class="error-message"> El stock mínimo no puede ser negativo. </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCIONES -->
+
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeProductForm()">
+                Cancelar
+              </button>
+
+              <button type="submit" class="primary-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Guardando...
+                } @else {
+                  {{ isEditing ? 'Guardar cambios' : 'Crear producto' }}
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      <!-- LISTADO -->
+
+      <section class="products-card">
+        <div class="card-header">
+          <div>
+            <h2>Productos registrados</h2>
+
+            <p>
+              {{ filteredProducts.length }}
+              {{ filteredProducts.length === 1 ? 'producto encontrado' : 'productos encontrados' }}
+            </p>
+          </div>
+        </div>
+
+        @if (filteredProducts.length === 0) {
+          <div class="empty-state">
+            <span>📦</span>
+
+            <h3>No hay productos</h3>
+
+            <p>No se encontraron productos con los filtros seleccionados.</p>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Código</th>
+                  <th>Categoría</th>
+                  <th>Proveedor</th>
+                  <th>Stock</th>
+                  <th>Precio venta</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (product of filteredProducts; track product.id) {
+                  <tr>
+                    <td>
+                      <div class="product-name">
+                        {{ product.name }}
+                      </div>
+                    </td>
+
+                    <td>
+                      {{ product.barcode }}
+                    </td>
+
+                    <td>
+                      {{ product.categoryName }}
+                    </td>
+
+                    <td>
+                      {{ product.provider || 'Sin proveedor' }}
+                    </td>
+
+                    <td>
+                      <span class="stock-badge" [class.low-stock]="isLowStock(product)">
+                        {{ product.currentStock }}
+
+                        @if (isLowStock(product)) {
+                          <span class="low-stock-label"> Bajo </span>
+                        }
+                      </span>
+                    </td>
+
+                    <td>
+                      {{ product.salePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                    </td>
+
+                    <td>
+                      <span class="active-badge"> Activo </span>
+                    </td>
+
+                    <td>
+                      <div class="table-actions">
+                        <button
+                          type="button"
+                          class="action-button view-button"
+                          title="Ver producto"
+                          (click)="openProductDetail(product)"
+                        >
+                          👁️
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-button edit-button"
+                          title="Editar producto"
+                          (click)="openEditForm(product)"
+                        >
+                          ✏️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL DETALLE -->
+
+@if (showProductDetail && selectedProduct) {
+  <div class="modal-overlay" (click)="closeProductDetail()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Detalle del producto</h2>
+
+          <p>Información registrada del producto.</p>
+        </div>
+
+        <button type="button" class="close-button" title="Cerrar" (click)="closeProductDetail()">
+          ✕
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Información general</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+              <strong>
+                {{ selectedProduct.name }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Código de barras</span>
+              <strong>
+                {{ selectedProduct.barcode }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Categoría</span>
+              <strong>
+                {{ selectedProduct.categoryName }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Proveedor</span>
+              <strong>
+                {{ selectedProduct.provider || 'Sin proveedor' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Precios e inventario</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Precio de compra</span>
+              <strong>
+                {{ selectedProduct.purchasePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Precio de venta</span>
+              <strong>
+                {{ selectedProduct.salePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Stock actual</span>
+              <strong [class.low-stock-text]="isLowStock(selectedProduct)">
+                {{ selectedProduct.currentStock }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Stock mínimo</span>
+              <strong>
+                {{ selectedProduct.minimumStock }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        @if (isLowStock(selectedProduct)) {
+          <div class="low-stock-alert">
+            <span>⚠️</span>
+
+            <div>
+              <strong>Stock bajo</strong>
+
+              <p>El stock actual está en el mínimo configurado o por debajo de este.</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="danger-button" (click)="deactivateProduct(selectedProduct)">
+          Desactivar producto
+        </button>
+
+        <div class="modal-action-right">
+          <button type="button" class="cancel-button" (click)="closeProductDetail()">Cerrar</button>
+          <button
+            type="button"
+            class="edit-button modal-edit-button"
+            (click)="openEditForm(selectedProduct!)"
+          >
+            Editar
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+}
