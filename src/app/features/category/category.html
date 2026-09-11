@@ -1,0 +1,270 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="category-page">
+      <!-- ENCABEZADO -->
+
+      <div class="page-header">
+        <div>
+          <h1>Categorías</h1>
+          <p>Administra las categorías utilizadas para organizar los productos.</p>
+        </div>
+
+        <button type="button" class="primary-button" (click)="openNewCategoryForm()">
+          Nueva categoría
+        </button>
+      </div>
+
+      <!-- FILTROS -->
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="search"> Buscar categoría </label>
+
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nombre o descripción"
+            autocomplete="off"
+          />
+        </div>
+      </section>
+
+      <!-- FORMULARIO -->
+
+      @if (showCategoryForm) {
+        <section class="category-form-card">
+          <div class="card-header">
+            <div>
+              <h2>
+                {{ isEditing ? 'Editar categoría' : 'Nueva categoría' }}
+              </h2>
+
+              <p>
+                {{
+                  isEditing
+                    ? 'Actualiza la información de la categoría.'
+                    : 'Registra una nueva categoría en el sistema.'
+                }}
+              </p>
+            </div>
+
+            <button type="button" class="close-button" title="Cerrar" (click)="closeCategoryForm()">
+              ✕
+            </button>
+          </div>
+
+          <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información de la categoría</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="name"> Nombre de la categoría </label>
+
+                  <input
+                    id="name"
+                    type="text"
+                    formControlName="name"
+                    placeholder="Nombre de la categoría"
+                    autocomplete="off"
+                  />
+
+                  @if (categoryForm.controls.name.invalid && categoryForm.controls.name.touched) {
+                    <span class="error-message"> El nombre de la categoría es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group form-group-full">
+                  <label for="description"> Descripción </label>
+
+                  <textarea
+                    id="description"
+                    formControlName="description"
+                    placeholder="Descripción de la categoría"
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCIONES -->
+
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeCategoryForm()">
+                Cancelar
+              </button>
+
+              <button type="submit" class="primary-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Guardando...
+                } @else {
+                  {{ isEditing ? 'Guardar cambios' : 'Crear categoría' }}
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      <!-- LISTADO -->
+
+      <section class="categories-card">
+        <div class="card-header">
+          <div>
+            <h2>Categorías registradas</h2>
+
+            <p>
+              {{ filteredCategories.length }}
+              {{
+                filteredCategories.length === 1 ? 'categoría encontrada' : 'categorías encontradas'
+              }}
+            </p>
+          </div>
+        </div>
+
+        @if (filteredCategories.length === 0) {
+          <div class="empty-state">
+            <span>📂</span>
+
+            <h3>No hay categorías</h3>
+
+            <p>No se encontraron categorías con los filtros seleccionados.</p>
+
+            <button type="button" class="primary-button" (click)="openNewCategoryForm()">
+              Crear categoría
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Categoría</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (category of filteredCategories; track category.id) {
+                  <tr>
+                    <td>
+                      <div class="category-name">
+                        {{ category.name }}
+                      </div>
+                    </td>
+
+                    <td>
+                      {{ category.description || 'Sin descripción' }}
+                    </td>
+
+                    <td>
+                      <span class="active-badge"> Activa </span>
+                    </td>
+
+                    <td>
+                      <div class="table-actions">
+                        <button
+                          type="button"
+                          class="action-button view-button"
+                          title="Ver categoría"
+                          (click)="openCategoryDetail(category)"
+                        >
+                          👁️
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-button edit-button"
+                          title="Editar categoría"
+                          (click)="openEditForm(category)"
+                        >
+                          ✏️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL DETALLE -->
+
+@if (showCategoryDetail && selectedCategory) {
+  <div class="modal-overlay" (click)="closeCategoryDetail()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Detalle de la categoría</h2>
+
+          <p>Información registrada de la categoría.</p>
+        </div>
+
+        <button type="button" class="close-button" title="Cerrar" (click)="closeCategoryDetail()">
+          ✕
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Información general</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+
+              <strong>
+                {{ selectedCategory.name }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Estado</span>
+
+              <strong> Activa </strong>
+            </div>
+
+            <div class="detail-item detail-item-full">
+              <span>Descripción</span>
+
+              <strong>
+                {{ selectedCategory.description || 'Sin descripción' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="danger-button" (click)="deactivateCategory(selectedCategory)">
+          Desactivar categoría
+        </button>
+
+        <div class="modal-action-right">
+          <button type="button" class="cancel-button" (click)="closeCategoryDetail()">
+            Cerrar
+          </button>
+
+          <button type="button" class="modal-edit-button" (click)="openEditForm(selectedCategory!)">
+            Editar
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+}

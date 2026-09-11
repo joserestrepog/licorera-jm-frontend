@@ -2,23 +2,23 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Sidebar } from '../../../dashboard/components/sidebar/sidebar';
-import { Topbar } from '../../../dashboard/components/topbar/topbar';
+import { Sidebar } from '../dashboard/sidebar/sidebar';
+import { Topbar } from '../dashboard/topbar/topbar';
 
-import { ProductService } from '../../services/product.service';
-import { Product } from '../../models/product.model';
+import { ProductService } from './product.service';
+import { Product } from './product.model';
 
-import { CategoryService } from '../../../categories/services/category.service';
-import { Category } from '../../../categories/models/category.model';
+import { CategoryService } from '../category/category.service';
+import { Category } from '../category/category.model';
 
 @Component({
-  selector: 'app-products',
+  selector: 'app-product',
   standalone: true,
   imports: [Sidebar, Topbar, CurrencyPipe, FormsModule, ReactiveFormsModule],
-  templateUrl: './products.html',
-  styleUrl: './products.css',
+  templateUrl: './product.html',
+  styleUrl: './product.css',
 })
-export class ProductsComponent implements OnInit {
+export class ProductComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly formBuilder = inject(FormBuilder).nonNullable;

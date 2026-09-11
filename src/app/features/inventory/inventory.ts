@@ -2,17 +2,17 @@ import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, inject } f
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Sidebar } from '../../../dashboard/components/sidebar/sidebar';
-import { Topbar } from '../../../dashboard/components/topbar/topbar';
+import { Sidebar } from '../dashboard/sidebar/sidebar';
+import { Topbar } from '../dashboard/topbar/topbar';
 
-import { InventoryService } from '../../services/inventory.service';
-import { InventoryEntry } from '../../models/inventory-entry.model';
+import { InventoryService } from './inventory.service';
+import { InventoryEntry } from './inventory-entry.model';
 
-import { ProductService } from '../../../products/services/product.service';
-import { Product } from '../../../products/models/product.model';
+import { ProductService } from '../product/product.service';
+import { Product } from '../product/product.model';
 
-import { CategoryService } from '../../../categories/services/category.service';
-import { Category } from '../../../categories/models/category.model';
+import { CategoryService } from '../category/category.service';
+import { Category } from '../category/category.model';
 
 @Component({
   selector: 'app-inventory',

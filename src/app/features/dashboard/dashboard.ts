@@ -1,19 +1,19 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
-import { Sidebar } from '../../components/sidebar/sidebar';
-import { Topbar } from '../../components/topbar/topbar';
+import { Sidebar } from './sidebar/sidebar';
+import { Topbar } from './topbar/topbar';
 
-import { AuthService } from '../../../auth/services/auth.service';
+import { AuthService } from '../auth/auth.service';
 
-import { ProductService } from '../../../products/services/product.service';
-import { Product } from '../../../products/models/product.model';
+import { ProductService } from '../product/product.service';
+import { Product } from '../product/product.model';
 
-import { SaleService } from '../../../sales/services/sale.service';
-import { Sale } from '../../../sales/models/sale.model';
+import { SaleService } from '../sale/sale.service';
+import { Sale } from '../sale/sale.model';
 
-import { CashRegisterService } from '../../../cash-register/services/cash-register.service';
-import { CashRegister } from '../../../cash-register/models/cash-register.model';
+import { CashRegisterService } from '../cash-register/cash-register.service';
+import { CashRegister } from '../cash-register/cash-register.model';
 
 @Component({
   selector: 'app-dashboard',

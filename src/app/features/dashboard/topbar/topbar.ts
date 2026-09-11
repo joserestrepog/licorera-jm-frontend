@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 
-import { AuthService } from '../../../auth/services/auth.service';
-import { CurrentUser } from '../../../auth/models/current-user.model';
+import { AuthService } from '../../auth/auth.service';
+import { CurrentUser } from '../../auth/current-user.model';
 
 @Component({
   selector: 'app-topbar',

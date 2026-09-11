@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { InventoryEntry } from '../models/inventory-entry.model';
-import { InventoryEntryRequest } from '../models/inventory-entry-request.model';
+import { InventoryEntry } from './inventory-entry.model';
+import { InventoryEntryRequest } from './inventory-entry-request.model';
 
 @Injectable({
   providedIn: 'root',

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { CashRegister } from '../models/cash-register.model';
+import { CashRegister } from './cash-register.model';
 
 @Injectable({
   providedIn: 'root',
