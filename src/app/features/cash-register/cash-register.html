@@ -18,147 +18,6 @@
         }
       </div>
 
-      <section class="summary-grid">
-        <article class="summary-card">
-          <div class="summary-icon">💰</div>
-
-          <div>
-            <span>Cajas abiertas</span>
-            <strong>{{ openCashRegisters.length }}</strong>
-          </div>
-        </article>
-
-        <article class="summary-card">
-          <div class="summary-icon">🔒</div>
-
-          <div>
-            <span>Cajas cerradas</span>
-            <strong>{{ closedCashRegisters.length }}</strong>
-          </div>
-        </article>
-
-        <article class="summary-card">
-          <div class="summary-icon">💵</div>
-
-          <div>
-            <span>Ventas en efectivo</span>
-            <strong>
-              {{
-                currentOpenCashRegister?.cashSales ?? 0
-                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-              }}
-            </strong>
-          </div>
-        </article>
-
-        <article class="summary-card">
-          <div class="summary-icon">🏦</div>
-
-          <div>
-            <span>Ventas por transferencia</span>
-            <strong>
-              {{
-                currentOpenCashRegister?.transferSales ?? 0
-                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-              }}
-            </strong>
-          </div>
-        </article>
-      </section>
-
-      @if (currentOpenCashRegister) {
-        <section class="current-cash-card">
-          <div class="card-header">
-            <div>
-              <h2>Caja actualmente abierta</h2>
-              <p>La caja se encuentra disponible para registrar operaciones.</p>
-            </div>
-
-            <span class="status-badge open"> Abierta </span>
-          </div>
-
-          <div class="current-cash-content">
-            <div class="current-cash-main">
-              <span>Usuario</span>
-              <strong>
-                {{ currentOpenCashRegister.username }}
-              </strong>
-            </div>
-
-            <div class="current-cash-item">
-              <span>Monto inicial</span>
-              <strong>
-                {{
-                  currentOpenCashRegister.openingAmount
-                    | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-                }}
-              </strong>
-            </div>
-
-            <div class="current-cash-item">
-              <span>Ventas en efectivo</span>
-              <strong>
-                {{
-                  currentOpenCashRegister.cashSales | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-                }}
-              </strong>
-            </div>
-
-            <div class="current-cash-item">
-              <span>Efectivo esperado</span>
-              <strong>
-                {{
-                  currentOpenCashRegister.expectedCash | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-                }}
-              </strong>
-            </div>
-
-            <div class="current-cash-actions">
-              <button
-                type="button"
-                class="secondary-button"
-                (click)="openCashRegisterDetail(currentOpenCashRegister)"
-              >
-                Ver detalle
-              </button>
-
-              <button
-                type="button"
-                class="danger-button"
-                (click)="openCloseForm(currentOpenCashRegister)"
-              >
-                Cerrar caja
-              </button>
-            </div>
-          </div>
-        </section>
-      }
-
-      <section class="filters-card">
-        <div class="filter-group search-group">
-          <label for="search">Buscar caja</label>
-
-          <input
-            id="search"
-            type="text"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange()"
-            placeholder="Usuario o estado"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="filter-group">
-          <label for="status">Estado</label>
-
-          <select id="status" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
-            <option value="ALL">Todos</option>
-            <option value="OPEN">Abiertas</option>
-            <option value="CLOSED">Cerradas</option>
-          </select>
-        </div>
-      </section>
-
       @if (showOpenForm) {
         <section class="cash-form-card">
           <div class="card-header">
@@ -331,6 +190,147 @@
           </form>
         </section>
       }
+
+      <section class="summary-grid">
+        <article class="summary-card">
+          <div class="summary-icon">💰</div>
+
+          <div>
+            <span>Cajas abiertas</span>
+            <strong>{{ openCashRegisters.length }}</strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">🔒</div>
+
+          <div>
+            <span>Cajas cerradas</span>
+            <strong>{{ closedCashRegisters.length }}</strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">💵</div>
+
+          <div>
+            <span>Ventas en efectivo</span>
+            <strong>
+              {{
+                currentOpenCashRegister?.cashSales ?? 0
+                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+              }}
+            </strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">🏦</div>
+
+          <div>
+            <span>Ventas por transferencia</span>
+            <strong>
+              {{
+                currentOpenCashRegister?.transferSales ?? 0
+                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+              }}
+            </strong>
+          </div>
+        </article>
+      </section>
+
+      @if (currentOpenCashRegister) {
+        <section class="current-cash-card">
+          <div class="card-header">
+            <div>
+              <h2>Caja actualmente abierta</h2>
+              <p>La caja se encuentra disponible para registrar operaciones.</p>
+            </div>
+
+            <span class="status-badge open"> Abierta </span>
+          </div>
+
+          <div class="current-cash-content">
+            <div class="current-cash-main">
+              <span>Usuario</span>
+              <strong>
+                {{ currentOpenCashRegister.username }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Monto inicial</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.openingAmount
+                    | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Ventas en efectivo</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.cashSales | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Efectivo esperado</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.expectedCash | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                (click)="openCashRegisterDetail(currentOpenCashRegister)"
+              >
+                Ver detalle
+              </button>
+
+              <button
+                type="button"
+                class="danger-button"
+                (click)="openCloseForm(currentOpenCashRegister)"
+              >
+                Cerrar caja
+              </button>
+            </div>
+          </div>
+        </section>
+      }
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="search">Buscar caja</label>
+
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Usuario o estado"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="status">Estado</label>
+
+          <select id="status" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
+            <option value="ALL">Todos</option>
+            <option value="OPEN">Abiertas</option>
+            <option value="CLOSED">Cerradas</option>
+          </select>
+        </div>
+      </section>
 
       <section class="cash-registers-card">
         <div class="card-header">

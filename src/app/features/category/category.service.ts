@@ -37,4 +37,8 @@ export class CategoryService {
   deactivate(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  activate(id: number): Observable<Category> {
+    return this.http.patch<Category>(`${this.apiUrl}/${id}/activate`, {});
+  }
 }

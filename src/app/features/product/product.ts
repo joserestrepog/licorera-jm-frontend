@@ -30,6 +30,7 @@ export class ProductComponent implements OnInit {
 
   searchTerm = '';
   selectedCategoryId = 0;
+  selectedStatus = 'ALL';
 
   showProductForm = false;
   showProductDetail = false;
@@ -57,7 +58,7 @@ export class ProductComponent implements OnInit {
   private loadProducts(): void {
     this.productService.findAll().subscribe({
       next: (products) => {
-        this.products = products.filter((product) => product.active);
+        this.products = products;
         this.applyFilters();
         this.changeDetectorRef.detectChanges();
       },
@@ -92,7 +93,12 @@ export class ProductComponent implements OnInit {
       const matchesCategory =
         this.selectedCategoryId === 0 || product.categoryId === this.selectedCategoryId;
 
-      return matchesSearch && matchesCategory;
+      const matchesStatus =
+        this.selectedStatus === 'ALL' ||
+        (this.selectedStatus === 'ACTIVE' && product.active) ||
+        (this.selectedStatus === 'INACTIVE' && !product.active);
+
+      return matchesSearch && matchesCategory && matchesStatus;
     });
   }
 
@@ -101,6 +107,10 @@ export class ProductComponent implements OnInit {
   }
 
   onCategoryChange(): void {
+    this.applyFilters();
+  }
+
+  onStatusChange(): void {
     this.applyFilters();
   }
 
@@ -207,6 +217,24 @@ export class ProductComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al desactivar producto:', error);
+      },
+    });
+  }
+
+  activateProduct(product: Product): void {
+    const confirmed = window.confirm(`¿Deseas activar nuevamente el producto "${product.name}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.productService.activate(product.id).subscribe({
+      next: () => {
+        this.closeProductDetail();
+        this.loadProducts();
+      },
+      error: (error) => {
+        console.error('Error al activar producto:', error);
       },
     });
   }

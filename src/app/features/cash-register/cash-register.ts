@@ -51,7 +51,10 @@ export class CashRegisterComponent implements OnInit {
   private loadCashRegisters(): void {
     this.cashRegisterService.findAll().subscribe({
       next: (cashRegisters) => {
-        this.cashRegisters = cashRegisters;
+        this.cashRegisters = [...cashRegisters].sort(
+          (a, b) => new Date(b.openedAt).getTime() - new Date(a.openedAt).getTime(),
+        );
+
         this.applyFilters();
         this.changeDetectorRef.detectChanges();
       },

@@ -234,6 +234,24 @@ export class UserComponent implements OnInit {
     });
   }
 
+  activateUser(user: User): void {
+    const confirmed = window.confirm(`¿Deseas activar nuevamente el usuario "${user.username}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.userService.activate(user.id).subscribe({
+      next: () => {
+        this.closeDetail();
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('Error al activar usuario:', error);
+      },
+    });
+  }
+
   getStatusClass(user: User): string {
     return user.active ? 'active' : 'inactive';
   }

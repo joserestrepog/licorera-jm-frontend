@@ -31,20 +31,12 @@
         </div>
 
         <div class="filter-group">
-          <label for="categoryFilter"> Categoría </label>
+          <label for="statusFilter"> Estado </label>
 
-          <select
-            id="categoryFilter"
-            [(ngModel)]="selectedCategoryId"
-            (ngModelChange)="onCategoryChange()"
-          >
-            <option [ngValue]="0">Todas las categorías</option>
-
-            @for (category of categories; track category.id) {
-              <option [ngValue]="category.id">
-                {{ category.name }}
-              </option>
-            }
+          <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
+            <option value="ALL">Todos</option>
+            <option value="ACTIVE">Activos</option>
+            <option value="INACTIVE">Inactivos</option>
           </select>
         </div>
       </section>
@@ -311,7 +303,11 @@
                     </td>
 
                     <td>
-                      <span class="active-badge"> Activo </span>
+                      @if (product.active) {
+                        <span class="active-badge">Activo</span>
+                      } @else {
+                        <span class="inactive-badge">Inactivo</span>
+                      }
                     </td>
 
                     <td>
@@ -395,6 +391,16 @@
                 {{ selectedProduct.provider || 'Sin proveedor' }}
               </strong>
             </div>
+
+            <div class="detail-item">
+              <span>Estado</span>
+
+              @if (selectedProduct.active) {
+                <strong>Activo</strong>
+              } @else {
+                <strong>Inactivo</strong>
+              }
+            </div>
           </div>
         </div>
 
@@ -446,9 +452,15 @@
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="danger-button" (click)="deactivateProduct(selectedProduct)">
-          Desactivar producto
-        </button>
+        @if (selectedProduct.active) {
+          <button type="button" class="danger-button" (click)="deactivateProduct(selectedProduct)">
+            Desactivar producto
+          </button>
+        } @else {
+          <button type="button" class="primary-button" (click)="activateProduct(selectedProduct)">
+            Activar producto
+          </button>
+        }
 
         <div class="modal-action-right">
           <button type="button" class="cancel-button" (click)="closeProductDetail()">Cerrar</button>

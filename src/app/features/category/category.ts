@@ -23,6 +23,7 @@ export class CategoryComponent implements OnInit {
   filteredCategories: Category[] = [];
 
   searchTerm = '';
+  selectedStatus = 'ALL';
 
   showCategoryForm = false;
   showCategoryDetail = false;
@@ -44,7 +45,7 @@ export class CategoryComponent implements OnInit {
   private loadCategories(): void {
     this.categoryService.findAll().subscribe({
       next: (categories) => {
-        this.categories = categories.filter((category) => category.active);
+        this.categories = categories;
         this.applyFilters();
         this.changeDetectorRef.detectChanges();
       },
@@ -58,15 +59,25 @@ export class CategoryComponent implements OnInit {
     const search = this.searchTerm.trim().toLowerCase();
 
     this.filteredCategories = this.categories.filter((category) => {
-      return (
+      const matchesSearch =
         !search ||
         category.name.toLowerCase().includes(search) ||
-        (category.description?.toLowerCase().includes(search) ?? false)
-      );
+        (category.description?.toLowerCase().includes(search) ?? false);
+
+      const matchesStatus =
+        this.selectedStatus === 'ALL' ||
+        (this.selectedStatus === 'ACTIVE' && category.active) ||
+        (this.selectedStatus === 'INACTIVE' && !category.active);
+
+      return matchesSearch && matchesStatus;
     });
   }
 
   onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onStatusChange(): void {
     this.applyFilters();
   }
 
@@ -177,6 +188,24 @@ export class CategoryComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al desactivar categoría:', error);
+      },
+    });
+  }
+
+  activateCategory(category: Category): void {
+    const confirmed = window.confirm(`¿Deseas activar nuevamente la categoría "${category.name}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.categoryService.activate(category.id).subscribe({
+      next: () => {
+        this.closeCategoryDetail();
+        this.loadCategories();
+      },
+      error: (error) => {
+        console.error('Error al activar categoría:', error);
       },
     });
   }

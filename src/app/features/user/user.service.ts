@@ -33,6 +33,10 @@ export class UserService {
     return this.http.delete<User>(`${this.apiUrl}/${id}`);
   }
 
+  activate(id: number): Observable<User> {
+    return this.http.patch<User>(`${this.apiUrl}/${id}/activate`, {});
+  }
+
   findRoles(): Observable<Role[]> {
     return this.http.get<Role[]>(this.roleApiUrl);
   }
