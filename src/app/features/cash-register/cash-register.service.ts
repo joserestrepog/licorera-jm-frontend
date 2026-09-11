@@ -15,4 +15,25 @@ export class CashRegisterService {
   findAll(): Observable<CashRegister[]> {
     return this.http.get<CashRegister[]>(this.apiUrl);
   }
+
+  findById(id: number): Observable<CashRegister> {
+    return this.http.get<CashRegister>(`${this.apiUrl}/${id}`);
+  }
+
+  openCashRegister(request: {
+    openingAmount: number;
+    notes: string | null;
+  }): Observable<CashRegister> {
+    return this.http.post<CashRegister>(`${this.apiUrl}/open`, request);
+  }
+
+  closeCashRegister(
+    id: number,
+    request: {
+      countedCash: number;
+      notes: string | null;
+    },
+  ): Observable<CashRegister> {
+    return this.http.post<CashRegister>(`${this.apiUrl}/${id}/close`, request);
+  }
 }

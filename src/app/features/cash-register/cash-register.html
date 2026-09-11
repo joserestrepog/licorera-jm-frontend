@@ -1,0 +1,620 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="cash-register-page">
+      <div class="page-header">
+        <div>
+          <h1>Caja</h1>
+          <p>Administra la apertura, operación y cierre de las cajas.</p>
+        </div>
+
+        @if (!currentOpenCashRegister) {
+          <button type="button" class="primary-button" (click)="openCashRegisterForm()">
+            Abrir caja
+          </button>
+        }
+      </div>
+
+      <section class="summary-grid">
+        <article class="summary-card">
+          <div class="summary-icon">💰</div>
+
+          <div>
+            <span>Cajas abiertas</span>
+            <strong>{{ openCashRegisters.length }}</strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">🔒</div>
+
+          <div>
+            <span>Cajas cerradas</span>
+            <strong>{{ closedCashRegisters.length }}</strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">💵</div>
+
+          <div>
+            <span>Ventas en efectivo</span>
+            <strong>
+              {{
+                currentOpenCashRegister?.cashSales ?? 0
+                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+              }}
+            </strong>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">🏦</div>
+
+          <div>
+            <span>Ventas por transferencia</span>
+            <strong>
+              {{
+                currentOpenCashRegister?.transferSales ?? 0
+                  | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+              }}
+            </strong>
+          </div>
+        </article>
+      </section>
+
+      @if (currentOpenCashRegister) {
+        <section class="current-cash-card">
+          <div class="card-header">
+            <div>
+              <h2>Caja actualmente abierta</h2>
+              <p>La caja se encuentra disponible para registrar operaciones.</p>
+            </div>
+
+            <span class="status-badge open"> Abierta </span>
+          </div>
+
+          <div class="current-cash-content">
+            <div class="current-cash-main">
+              <span>Usuario</span>
+              <strong>
+                {{ currentOpenCashRegister.username }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Monto inicial</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.openingAmount
+                    | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Ventas en efectivo</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.cashSales | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-item">
+              <span>Efectivo esperado</span>
+              <strong>
+                {{
+                  currentOpenCashRegister.expectedCash | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="current-cash-actions">
+              <button
+                type="button"
+                class="secondary-button"
+                (click)="openCashRegisterDetail(currentOpenCashRegister)"
+              >
+                Ver detalle
+              </button>
+
+              <button
+                type="button"
+                class="danger-button"
+                (click)="openCloseForm(currentOpenCashRegister)"
+              >
+                Cerrar caja
+              </button>
+            </div>
+          </div>
+        </section>
+      }
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="search">Buscar caja</label>
+
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Usuario o estado"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="status">Estado</label>
+
+          <select id="status" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
+            <option value="ALL">Todos</option>
+            <option value="OPEN">Abiertas</option>
+            <option value="CLOSED">Cerradas</option>
+          </select>
+        </div>
+      </section>
+
+      @if (showOpenForm) {
+        <section class="cash-form-card">
+          <div class="card-header">
+            <div>
+              <h2>Abrir caja</h2>
+              <p>Registra el monto inicial disponible en efectivo.</p>
+            </div>
+
+            <button type="button" class="close-button" title="Cerrar" (click)="closeOpenForm()">
+              ✕
+            </button>
+          </div>
+
+          <form [formGroup]="openForm" (ngSubmit)="saveOpenCashRegister()">
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información de apertura</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="openingAmount"> Monto inicial </label>
+
+                  <input
+                    id="openingAmount"
+                    type="number"
+                    min="0"
+                    step="100"
+                    formControlName="openingAmount"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    openForm.controls.openingAmount.invalid &&
+                    openForm.controls.openingAmount.touched
+                  ) {
+                    <span class="error-message">
+                      El monto inicial es obligatorio y no puede ser negativo.
+                    </span>
+                  }
+                </div>
+
+                <div class="form-group form-group-full">
+                  <label for="openNotes"> Observación </label>
+
+                  <textarea
+                    id="openNotes"
+                    formControlName="notes"
+                    placeholder="Observación de la apertura"
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeOpenForm()">
+                Cancelar
+              </button>
+
+              <button type="submit" class="primary-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Abriendo...
+                } @else {
+                  Abrir caja
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      @if (showCloseForm && selectedCashRegister) {
+        <section class="cash-form-card">
+          <div class="card-header">
+            <div>
+              <h2>Cerrar caja</h2>
+              <p>Registra el efectivo contado físicamente para realizar el cierre.</p>
+            </div>
+
+            <button type="button" class="close-button" title="Cerrar" (click)="closeCloseForm()">
+              ✕
+            </button>
+          </div>
+
+          <div class="close-summary">
+            <div>
+              <span>Efectivo esperado</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.expectedCash | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Ventas en efectivo</span>
+
+              <strong>
+                {{ selectedCashRegister.cashSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Ventas por transferencia</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.transferSales | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+          </div>
+
+          <form [formGroup]="closeForm" (ngSubmit)="saveCloseCashRegister()">
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información del cierre</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="countedCash"> Efectivo contado </label>
+
+                  <input
+                    id="countedCash"
+                    type="number"
+                    min="0"
+                    step="100"
+                    formControlName="countedCash"
+                    placeholder="0"
+                  />
+
+                  @if (
+                    closeForm.controls.countedCash.invalid && closeForm.controls.countedCash.touched
+                  ) {
+                    <span class="error-message">
+                      El efectivo contado es obligatorio y no puede ser negativo.
+                    </span>
+                  }
+                </div>
+
+                <div class="form-group form-group-full">
+                  <label for="closeNotes"> Observación </label>
+
+                  <textarea
+                    id="closeNotes"
+                    formControlName="notes"
+                    placeholder="Observación del cierre"
+                    rows="4"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeCloseForm()">
+                Cancelar
+              </button>
+
+              <button type="submit" class="danger-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Cerrando...
+                } @else {
+                  Cerrar caja
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      <section class="cash-registers-card">
+        <div class="card-header">
+          <div>
+            <h2>Historial de cajas</h2>
+
+            <p>
+              {{ filteredCashRegisters.length }}
+              {{ filteredCashRegisters.length === 1 ? 'caja encontrada' : 'cajas encontradas' }}
+            </p>
+          </div>
+        </div>
+
+        @if (filteredCashRegisters.length === 0) {
+          <div class="empty-state">
+            <span>💰</span>
+
+            <h3>No hay cajas</h3>
+
+            <p>No se encontraron cajas con los filtros seleccionados.</p>
+
+            @if (!currentOpenCashRegister) {
+              <button type="button" class="primary-button" (click)="openCashRegisterForm()">
+                Abrir caja
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Apertura</th>
+                  <th>Cierre</th>
+                  <th>Inicial</th>
+                  <th>Ventas</th>
+                  <th>Estado</th>
+                  <th>Resultado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (cashRegister of filteredCashRegisters; track cashRegister.id) {
+                  <tr>
+                    <td>
+                      <div class="cash-user">
+                        {{ cashRegister.username }}
+                      </div>
+                    </td>
+
+                    <td>
+                      {{ cashRegister.openedAt | date: 'dd/MM/yyyy HH:mm' }}
+                    </td>
+
+                    <td>
+                      {{
+                        cashRegister.closedAt
+                          ? (cashRegister.closedAt | date: 'dd/MM/yyyy HH:mm')
+                          : '—'
+                      }}
+                    </td>
+
+                    <td>
+                      {{ cashRegister.openingAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                    </td>
+
+                    <td>
+                      {{ cashRegister.totalSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                    </td>
+
+                    <td>
+                      @if (cashRegister.status === 'OPEN') {
+                        <span class="status-badge open"> Abierta </span>
+                      } @else {
+                        <span class="status-badge closed"> Cerrada </span>
+                      }
+                    </td>
+
+                    <td>
+                      @if (cashRegister.status === 'OPEN') {
+                        <span class="pending-result"> Pendiente </span>
+                      } @else {
+                        <span class="difference-value" [class]="getDifferenceClass(cashRegister)">
+                          {{ getDifferenceLabel(cashRegister) }}
+                        </span>
+                      }
+                    </td>
+
+                    <td>
+                      <div class="table-actions">
+                        <button
+                          type="button"
+                          class="action-button view-button"
+                          title="Ver caja"
+                          (click)="openCashRegisterDetail(cashRegister)"
+                        >
+                          👁️
+                        </button>
+
+                        @if (cashRegister.status === 'OPEN') {
+                          <button
+                            type="button"
+                            class="action-button close-action-button"
+                            title="Cerrar caja"
+                            (click)="openCloseForm(cashRegister)"
+                          >
+                            🔒
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>
+
+@if (showDetail && selectedCashRegister) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Detalle de la caja</h2>
+          <p>Información registrada de la operación de caja.</p>
+        </div>
+
+        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">✕</button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Información general</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Usuario</span>
+              <strong>
+                {{ selectedCashRegister.username }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Estado</span>
+
+              <strong>
+                {{ selectedCashRegister.status === 'OPEN' ? 'Abierta' : 'Cerrada' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Apertura</span>
+
+              <strong>
+                {{ selectedCashRegister.openedAt | date: 'dd/MM/yyyy HH:mm' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Cierre</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.closedAt
+                    ? (selectedCashRegister.closedAt | date: 'dd/MM/yyyy HH:mm')
+                    : 'Pendiente'
+                }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Resumen financiero</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Monto inicial</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.openingAmount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Ventas en efectivo</span>
+
+              <strong>
+                {{ selectedCashRegister.cashSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Ventas por transferencia</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.transferSales | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Total de ventas</span>
+
+              <strong>
+                {{ selectedCashRegister.totalSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Efectivo esperado</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.expectedCash | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Efectivo contado</span>
+
+              <strong>
+                {{
+                  selectedCashRegister.countedCash !== null
+                    ? (selectedCashRegister.countedCash
+                      | currency: 'COP' : 'symbol-narrow' : '1.0-0')
+                    : 'Pendiente'
+                }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Resultado</span>
+
+              <strong [class]="getDifferenceClass(selectedCashRegister)">
+                {{
+                  selectedCashRegister.difference !== null
+                    ? (selectedCashRegister.difference
+                      | currency: 'COP' : 'symbol-narrow' : '1.0-0')
+                    : 'Pendiente'
+                }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Tipo de diferencia</span>
+
+              <strong>
+                {{ getDifferenceLabel(selectedCashRegister) }}
+              </strong>
+            </div>
+
+            <div class="detail-item detail-item-full">
+              <span>Observación</span>
+
+              <strong>
+                {{ selectedCashRegister.notes || 'Sin observaciones' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        @if (selectedCashRegister.status === 'OPEN') {
+          <button type="button" class="danger-button" (click)="openCloseForm(selectedCashRegister)">
+            Cerrar caja
+          </button>
+        }
+
+        <div class="modal-action-right">
+          <button type="button" class="cancel-button" (click)="closeDetail()">Cerrar</button>
+        </div>
+      </div>
+    </section>
+  </div>
+}

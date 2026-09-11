@@ -28,6 +28,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/category/category').then((m) => m.CategoryComponent),
   },
   {
+    path: 'cash-register',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/cash-register/cash-register').then((m) => m.CashRegisterComponent),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
