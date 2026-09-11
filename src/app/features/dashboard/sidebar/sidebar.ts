@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { AuthService } from '../../auth/auth.service';
@@ -14,6 +15,8 @@ export class Sidebar {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  readonly currentUser = this.authService.getCurrentUser();
+
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
@@ -23,5 +26,9 @@ export class Sidebar {
     this.router.navigate(['/sales'], {
       onSameUrlNavigation: 'reload',
     });
+  }
+
+  isAdmin(): boolean {
+    return this.currentUser?.role === 'ADMINISTRADOR';
   }
 }

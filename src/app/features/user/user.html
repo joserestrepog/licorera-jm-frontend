@@ -1,0 +1,382 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="user-page">
+      <!-- ENCABEZADO -->
+
+      <div class="page-header">
+        <div>
+          <h1>Usuarios</h1>
+          <p>Gestiona los usuarios y sus roles de acceso.</p>
+        </div>
+
+        <button type="button" class="primary-button" (click)="openCreateForm()">
+          Crear usuario
+        </button>
+      </div>
+
+      <!-- ERROR GENERAL -->
+
+      @if (errorMessage && !showForm) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <!-- RESUMEN -->
+
+      <section class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-label">Total usuarios</span>
+          <strong>{{ users.length }}</strong>
+        </div>
+
+        <div class="summary-card">
+          <span class="summary-label">Usuarios activos</span>
+          <strong>{{ activeUsers.length }}</strong>
+        </div>
+
+        <div class="summary-card">
+          <span class="summary-label">Usuarios inactivos</span>
+          <strong>{{ inactiveUsers.length }}</strong>
+        </div>
+      </section>
+
+      <!-- FILTROS -->
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="user-search"> Buscar usuario </label>
+
+          <input
+            id="user-search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nombre, usuario o rol"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-group status-filter">
+          <label for="user-status"> Estado </label>
+
+          <select id="user-status" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
+            <option value="ALL">Todos</option>
+            <option value="ACTIVE">Activos</option>
+            <option value="INACTIVE">Inactivos</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- FORMULARIO -->
+
+      @if (showForm) {
+        <section class="user-form-card">
+          <div class="card-header">
+            <div>
+              <h2>
+                {{ isEditing ? 'Editar usuario' : 'Nuevo usuario' }}
+              </h2>
+
+              <p>
+                {{
+                  isEditing
+                    ? 'Actualiza la información del usuario.'
+                    : 'Registra un nuevo usuario en el sistema.'
+                }}
+              </p>
+            </div>
+
+            <button type="button" class="close-button" title="Cerrar" (click)="closeForm()">
+              ✕
+            </button>
+          </div>
+
+          <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+            <div class="form-section">
+              <div class="section-title">
+                <h3>Información del usuario</h3>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="first-name"> Nombre </label>
+
+                  <input
+                    id="first-name"
+                    type="text"
+                    formControlName="firstName"
+                    placeholder="Nombre"
+                    autocomplete="off"
+                  />
+
+                  @if (userForm.controls.firstName.invalid && userForm.controls.firstName.touched) {
+                    <span class="error-message"> El nombre es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="last-name"> Apellido </label>
+
+                  <input
+                    id="last-name"
+                    type="text"
+                    formControlName="lastName"
+                    placeholder="Apellido"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="username"> Nombre de usuario </label>
+
+                  <input
+                    id="username"
+                    type="text"
+                    formControlName="username"
+                    placeholder="Nombre de usuario"
+                    autocomplete="off"
+                  />
+
+                  @if (userForm.controls.username.invalid && userForm.controls.username.touched) {
+                    <span class="error-message"> El nombre de usuario es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label for="role"> Rol </label>
+
+                  <select id="role" formControlName="roleId">
+                    <option [ngValue]="0" disabled>Selecciona un rol</option>
+
+                    @for (role of roles; track role.id) {
+                      <option [ngValue]="role.id">
+                        {{ role.name }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (userForm.controls.roleId.invalid && userForm.controls.roleId.touched) {
+                    <span class="error-message"> El rol es obligatorio. </span>
+                  }
+                </div>
+
+                <div class="form-group form-group-full">
+                  <label for="password">
+                    {{ isEditing ? 'Nueva contraseña' : 'Contraseña' }}
+                  </label>
+
+                  <input
+                    id="password"
+                    type="password"
+                    formControlName="password"
+                    placeholder="Mínimo 6 caracteres"
+                    autocomplete="new-password"
+                  />
+
+                  @if (userForm.controls.password.invalid && userForm.controls.password.touched) {
+                    <span class="error-message">
+                      La contraseña debe tener entre 6 y 255 caracteres.
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            @if (errorMessage) {
+              <div class="form-error">
+                {{ errorMessage }}
+              </div>
+            }
+
+            <!-- ACCIONES -->
+
+            <div class="form-actions">
+              <button type="button" class="cancel-button" (click)="closeForm()">Cancelar</button>
+
+              <button type="submit" class="primary-button" [disabled]="isSaving">
+                @if (isSaving) {
+                  Guardando...
+                } @else {
+                  {{ isEditing ? 'Guardar cambios' : 'Crear usuario' }}
+                }
+              </button>
+            </div>
+          </form>
+        </section>
+      }
+
+      <!-- LISTADO -->
+
+      <section class="users-card">
+        <div class="card-header">
+          <div>
+            <h2>Usuarios registrados</h2>
+
+            <p>
+              {{ filteredUsers.length }}
+              {{ filteredUsers.length === 1 ? 'usuario encontrado' : 'usuarios encontrados' }}
+            </p>
+          </div>
+        </div>
+
+        @if (filteredUsers.length === 0) {
+          <div class="empty-state">
+            <span>♙</span>
+
+            <h3>No hay usuarios</h3>
+
+            <p>No se encontraron usuarios con los filtros seleccionados.</p>
+
+            <button type="button" class="primary-button" (click)="openCreateForm()">
+              Crear usuario
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (user of filteredUsers; track user.id) {
+                  <tr>
+                    <td>
+                      <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                    </td>
+
+                    <td>
+                      {{ user.username }}
+                    </td>
+
+                    <td>
+                      <span class="role-badge">
+                        {{ user.roleName }}
+                      </span>
+                    </td>
+
+                    <td>
+                      @if (user.active) {
+                        <span class="active-badge"> Activo </span>
+                      } @else {
+                        <span class="inactive-badge"> Inactivo </span>
+                      }
+                    </td>
+
+                    <td>
+                      <div class="table-actions">
+                        <button
+                          type="button"
+                          class="action-button view-button"
+                          title="Ver usuario"
+                          (click)="openUserDetail(user)"
+                        >
+                          👁️
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-button edit-button"
+                          title="Editar usuario"
+                          (click)="openEditForm(user)"
+                        >
+                          ✏️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>
+
+<!-- MODAL DETALLE -->
+
+@if (showDetail && selectedUser) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Detalle del usuario</h2>
+
+          <p>Información registrada del usuario.</p>
+        </div>
+
+        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">✕</button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Información general</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+
+              <strong>
+                {{ selectedUser.firstName }}
+                {{ selectedUser.lastName }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Usuario</span>
+
+              <strong>
+                {{ selectedUser.username }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Rol</span>
+
+              <strong>
+                {{ selectedUser.roleName }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Estado</span>
+
+              <strong>
+                {{ getStatusLabel(selectedUser) }}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        @if (selectedUser.active) {
+          <button type="button" class="danger-button" (click)="deactivateUser(selectedUser)">
+            Desactivar usuario
+          </button>
+        }
+
+        <div class="modal-action-right">
+          <button type="button" class="cancel-button" (click)="closeDetail()">Cerrar</button>
+
+          <button type="button" class="modal-edit-button" (click)="openEditForm(selectedUser)">
+            Editar
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+}

@@ -54,22 +54,24 @@
       <span>Caja</span>
     </a>
 
-    <span class="nav-section-title">Administración</span>
+    @if (isAdmin()) {
+      <span class="nav-section-title">Administración</span>
 
-    <a routerLink="/report" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">▥</span>
-      <span>Reportes</span>
-    </a>
+      <a routerLink="/report" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">▥</span>
+        <span>Reportes</span>
+      </a>
 
-    <a routerLink="/users" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">♙</span>
-      <span>Usuarios</span>
-    </a>
+      <a routerLink="/users" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">♙</span>
+        <span>Usuarios</span>
+      </a>
 
-    <a routerLink="/backups" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">↻</span>
-      <span>Respaldos</span>
-    </a>
+      <a routerLink="/backups" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">↻</span>
+        <span>Respaldos</span>
+      </a>
+    }
   </nav>
 
   <div class="sidebar-footer">
