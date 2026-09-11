@@ -23,9 +23,15 @@
       <span>Dashboard</span>
     </a>
 
-    <a routerLink="/sales" routerLinkActive="active" class="nav-item">
+    <a
+      href="#"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-item"
+      (click)="goToSales(); $event.preventDefault()"
+    >
       <span class="nav-icon">▣</span>
-      <span>Ventas</span>
+      <span>Vender</span>
     </a>
 
     <a routerLink="/inventory" routerLinkActive="active" class="nav-item">

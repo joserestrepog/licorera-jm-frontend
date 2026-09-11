@@ -28,23 +28,24 @@ export class AuthService {
   }
 
   getCurrentUser(): CurrentUser | null {
-    const token = this.getToken();
+  const token = this.getToken();
 
-    if (!token) {
-      return null;
-    }
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-
-      return {
-        username: payload.sub,
-        role: payload.role,
-      };
-    } catch {
-      return null;
-    }
+  if (!token) {
+    return null;
   }
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+
+    return {
+      userId: Number(payload.userId),
+      username: payload.sub,
+      role: payload.role,
+    };
+  } catch {
+    return null;
+  }
+}
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);

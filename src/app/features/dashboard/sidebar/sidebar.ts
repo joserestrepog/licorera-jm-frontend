@@ -18,4 +18,10 @@ export class Sidebar {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  goToSales(): void {
+    this.router.navigate(['/sales'], {
+      onSameUrlNavigation: 'reload',
+    });
+  }
 }

@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
   {
+    path: 'sales',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/sale/sale').then((m) => m.SaleComponent),
+  },
+  {
     path: 'inventory',
     canActivate: [authGuard],
     loadComponent: () => import('./features/inventory/inventory').then((m) => m.InventoryComponent),
@@ -33,6 +38,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/cash-register/cash-register').then((m) => m.CashRegisterComponent),
   },
+
   {
     path: '',
     redirectTo: 'login',

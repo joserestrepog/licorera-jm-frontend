@@ -1,0 +1,341 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <div class="page-content">
+      <header class="page-header">
+        <h1>Vender</h1>
+        <p>Registra las ventas y controla los productos de la venta actual.</p>
+      </header>
+
+      <div class="sale-layout">
+        <section class="products-section">
+          <!-- ESCÁNER -->
+          <div class="scan-card">
+            <div class="scan-title">
+              <h2>Escanear producto</h2>
+              <p>Escanea el código de barras para agregar el producto a la venta.</p>
+            </div>
+
+            <form class="barcode-form" (submit)="$event.preventDefault(); processBarcode()">
+              <input
+                #barcodeInput
+                type="text"
+                [(ngModel)]="barcode"
+                name="barcode"
+                placeholder="Escanee o escriba el código de barras"
+                autocomplete="off"
+                autofocus
+                [disabled]="!canSell"
+                (keydown.enter)="processBarcode()"
+              />
+
+              <button
+                type="button"
+                class="primary-button"
+                [disabled]="!canSell"
+                (click)="processBarcode()"
+              >
+                Agregar
+              </button>
+            </form>
+          </div>
+
+          <!-- PRODUCTOS DE LA VENTA -->
+          <div class="items-card">
+            <div class="card-header">
+              <h2>Productos de la venta</h2>
+              <span>
+                {{ saleItems.length }}
+                {{ saleItems.length === 1 ? 'producto' : 'productos' }}
+              </span>
+            </div>
+
+            @if (saleItems.length > 0) {
+              <div class="sale-items">
+                @for (item of saleItems; track item.product.id) {
+                  <div class="sale-item">
+                    <div class="product-info">
+                      <strong>{{ item.product.name }}</strong>
+                      <span> Código: {{ item.product.barcode }} </span>
+                    </div>
+
+                    <div class="quantity-control">
+                      <button
+                        type="button"
+                        aria-label="Disminuir cantidad"
+                        (click)="decreaseQuantity(item)"
+                      >
+                        −
+                      </button>
+
+                      <span>{{ item.quantity }}</span>
+
+                      <button
+                        type="button"
+                        aria-label="Aumentar cantidad"
+                        (click)="increaseQuantity(item)"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div class="unit-price">
+                      {{ item.product.salePrice | currency: 'COP' : 'symbol' : '1.0-0' }}
+                    </div>
+
+                    <div class="item-total">
+                      <strong>
+                        {{ getItemTotal(item) | currency: 'COP' : 'symbol' : '1.0-0' }}
+                      </strong>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="remove-button"
+                      aria-label="Eliminar producto"
+                      (click)="removeItem(item)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-sale">
+                <div class="empty-icon">🛒</div>
+
+                <h3>No hay productos agregados</h3>
+
+                <p>Escanea un código de barras para comenzar la venta.</p>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- RESUMEN -->
+        <aside class="summary-card">
+          <h2>Resumen de venta</h2>
+
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>
+              {{ subtotal | currency: 'COP' : 'symbol' : '1.0-0' }}
+            </strong>
+          </div>
+
+          <div class="discount-field">
+            <label for="discount"> Descuento </label>
+
+            <input
+              type="number"
+              min="0"
+              [(ngModel)]="discount"
+              (ngModelChange)="onDiscountChange($event)"
+            />
+          </div>
+
+          <div class="summary-total">
+            <span>Total</span>
+
+            <strong>
+              {{ total | currency: 'COP' : 'symbol' : '1.0-0' }}
+            </strong>
+          </div>
+
+          <!-- MÉTODO DE PAGO -->
+          <div class="payment-section">
+            <h3>Método de pago</h3>
+
+            <div class="payment-options">
+              <label class="payment-option" [class.selected]="selectedPaymentMethod === 'EFECTIVO'">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="EFECTIVO"
+                  [(ngModel)]="selectedPaymentMethod"
+                  (ngModelChange)="onPaymentMethodChange($event)"
+                />
+                <span>Efectivo</span>
+              </label>
+
+              <label
+                class="payment-option"
+                [class.selected]="selectedPaymentMethod === 'TRANSFERENCIA'"
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="TRANSFERENCIA"
+                  [(ngModel)]="selectedPaymentMethod"
+                  (ngModelChange)="onPaymentMethodChange($event)"
+                />
+                <span>Transferencia</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ACCIONES -->
+          <div class="summary-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              [disabled]="saleItems.length === 0"
+              (click)="clearSale()"
+            >
+              Limpiar
+            </button>
+
+            <button type="button" class="primary-button" (click)="sell()">Vender</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+
+@if (showSaleConfirmation) {
+  <div class="modal-overlay">
+    <div class="confirmation-modal">
+      <div class="confirmation-header">
+        <h2>Confirmar venta</h2>
+        <p>Verifica los datos antes de registrar la venta.</p>
+      </div>
+
+      <div class="confirmation-items">
+        @for (item of saleItems; track item.product.id) {
+          <div class="confirmation-item">
+            <div>
+              <strong>{{ item.product.name }}</strong>
+              <span>
+                {{ item.quantity }} ×
+                {{ item.product.salePrice | currency: 'COP' : 'symbol' : '1.0-0' }}
+              </span>
+            </div>
+
+            <strong>
+              {{ getItemTotal(item) | currency: 'COP' : 'symbol' : '1.0-0' }}
+            </strong>
+          </div>
+        }
+      </div>
+
+      <div class="confirmation-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong>
+            {{ subtotal | currency: 'COP' : 'symbol' : '1.0-0' }}
+          </strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Descuento</span>
+          <strong>
+            {{ discount | currency: 'COP' : 'symbol' : '1.0-0' }}
+          </strong>
+        </div>
+
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <strong>
+            {{ total | currency: 'COP' : 'symbol' : '1.0-0' }}
+          </strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Pago</span>
+          <strong>{{ selectedPaymentMethod }}</strong>
+        </div>
+      </div>
+
+      <div class="confirmation-actions">
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="processingSale"
+          (click)="cancelSaleConfirmation()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="processingSale"
+          (click)="confirmSale()"
+        >
+          {{ processingSale ? 'Procesando...' : 'Confirmar venta' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showSaleSuccess) {
+  <div class="success-overlay">
+    <div class="success-modal">
+      <div class="success-circle">✓</div>
+
+      <h2>Venta realizada</h2>
+
+      <p>La venta fue registrada correctamente.</p>
+
+      <button type="button" class="success-button" (click)="acceptSaleSuccess()">
+        Ir al Dashboard
+      </button>
+    </div>
+  </div>
+}
+
+<!-- ALERTA: CAJA -->
+@if (showCashAlert) {
+  <div class="alert-overlay">
+    <div class="alert-modal">
+      <div class="alert-icon warning">!</div>
+
+      <h2>Caja no abierta</h2>
+
+      <p>
+        {{ alertMessage }}
+      </p>
+
+      <button type="button" class="primary-button" (click)="goToCashRegister()">Ir a Caja</button>
+    </div>
+  </div>
+}
+
+<!-- ALERTA: PRODUCTO -->
+@if (showProductAlert) {
+  <div class="alert-overlay">
+    <div class="alert-modal">
+      <div class="alert-icon warning">!</div>
+
+      <h2>Producto no disponible</h2>
+
+      <p>
+        {{ alertMessage }}
+      </p>
+
+      <button type="button" class="primary-button" (click)="closeAlerts()">Entendido</button>
+    </div>
+  </div>
+}
+
+<!-- ALERTA: STOCK -->
+@if (showStockAlert) {
+  <div class="alert-overlay">
+    <div class="alert-modal">
+      <div class="alert-icon warning">!</div>
+
+      <h2>Producto sin existencias</h2>
+
+      <p>
+        {{ alertMessage }}
+      </p>
+
+      <button type="button" class="primary-button" (click)="closeAlerts()">Entendido</button>
+    </div>
+  </div>
+}
