@@ -1,0 +1,233 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <div class="backup-page">
+      <div class="page-header">
+        <div>
+          <h1>Respaldos</h1>
+          <p>Administra los respaldos de la base de datos.</p>
+        </div>
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="isCreating"
+          (click)="createBackup()"
+        >
+          @if (isCreating) {
+            Creando respaldo...
+          } @else {
+            Crear respaldo
+          }
+        </button>
+      </div>
+
+      @if (successMessage) {
+        <div class="success-message">
+          <span>✓</span>
+          <span>{{ successMessage }}</span>
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="error-message">
+          <span>⚠</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <section class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-label">Total respaldos</span>
+          <strong>{{ backups.length }}</strong>
+        </div>
+
+        <div class="summary-card">
+          <span class="summary-label">Último respaldo</span>
+
+          @if (latestBackup && getBackupDate(latestBackup)) {
+            <strong>
+              {{ getBackupDate(latestBackup) | date: 'dd/MM/yyyy HH:mm' }}
+            </strong>
+          } @else {
+            <strong>Sin respaldos</strong>
+          }
+        </div>
+
+        <div class="summary-card">
+          <span class="summary-label">Respaldo automático</span>
+          <strong>18:00</strong>
+        </div>
+      </section>
+
+      <section class="backup-info-card">
+        <div class="info-icon">🛡️</div>
+
+        <div>
+          <h2>Protección de la información</h2>
+          <p>
+            El sistema realiza respaldos automáticos diariamente a las 18:00. También puedes crear
+            un respaldo manual antes de realizar cambios importantes.
+          </p>
+        </div>
+      </section>
+
+      <section class="backups-card">
+        <div class="card-header">
+          <div>
+            <h2>Historial de respaldos</h2>
+            <p>Consulta y restaura los respaldos disponibles.</p>
+          </div>
+        </div>
+
+        @if (isLoading) {
+          <div class="loading-state">
+            <span>⏳</span>
+            <h3>Cargando respaldos...</h3>
+            <p>Estamos consultando los archivos disponibles.</p>
+          </div>
+        } @else if (backups.length === 0) {
+          <div class="empty-state">
+            <span>🗄️</span>
+            <h3>No hay respaldos</h3>
+            <p>Todavía no existen respaldos disponibles para restaurar.</p>
+
+            <button
+              type="button"
+              class="primary-button"
+              [disabled]="isCreating"
+              (click)="createBackup()"
+            >
+              Crear respaldo
+            </button>
+          </div>
+        } @else {
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Archivo</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (backup of backups; track backup) {
+                  <tr>
+                    <td>
+                      <span class="backup-name">
+                        {{ backup }}
+                      </span>
+                    </td>
+
+                    <td>
+                      @if (getBackupDate(backup); as backupDate) {
+                        {{ backupDate | date: 'dd/MM/yyyy HH:mm:ss' }}
+                      } @else {
+                        —
+                      }
+                    </td>
+
+                    <td>
+                      @if (backup === latestBackup) {
+                        <span class="latest-badge"> Más reciente </span>
+                      } @else {
+                        <span class="backup-badge"> Respaldo </span>
+                      }
+                    </td>
+
+                    <td>
+                      <div class="table-actions">
+                        <button
+                          type="button"
+                          class="action-button restore-button"
+                          title="Restaurar respaldo"
+                          [disabled]="isRestoring"
+                          (click)="openRestoreConfirmation(backup)"
+                        >
+                          ↻
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </div>
+  </main>
+</div>
+
+@if (showRestoreConfirmation && selectedBackup) {
+  <div class="modal-overlay" (click)="closeRestoreConfirmation()">
+    <section class="confirmation-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Restaurar respaldo</h2>
+          <p>Confirma esta operación antes de continuar.</p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          title="Cerrar"
+          [disabled]="isRestoring"
+          (click)="closeRestoreConfirmation()"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <div class="warning-box">
+          <span class="warning-icon">⚠</span>
+
+          <div>
+            <strong>Esta operación reemplazará la información actual.</strong>
+
+            <p>
+              Al restaurar este respaldo, los datos actuales de la base de datos serán reemplazados
+              por la información contenida en el archivo seleccionado.
+            </p>
+          </div>
+        </div>
+
+        <div class="selected-backup">
+          <span>Respaldo seleccionado</span>
+          <strong>{{ selectedBackup }}</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="cancel-button"
+          [disabled]="isRestoring"
+          (click)="closeRestoreConfirmation()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="danger-button"
+          [disabled]="isRestoring"
+          (click)="restoreBackup()"
+        >
+          @if (isRestoring) {
+            Restaurando...
+          } @else {
+            Restaurar respaldo
+          }
+        </button>
+      </div>
+    </section>
+  </div>
+}

@@ -50,6 +50,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/user/user').then((m) => m.UserComponent),
   },
   {
+    path: 'backups',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/backup/backup').then((m) => m.BackupComponent),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
