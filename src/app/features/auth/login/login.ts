@@ -1,6 +1,13 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import {
+  LucideEye,
+  LucideEyeOff,
+  LucideLockKeyhole,
+  LucideLogIn,
+  LucideUser,
+} from '@lucide/angular';
 
 import { AuthService } from '../auth.service';
 import { LoginRequest } from '../login-request.model';
@@ -8,7 +15,7 @@ import { LoginRequest } from '../login-request.model';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, LucideEye, LucideEyeOff, LucideLockKeyhole, LucideLogIn, LucideUser],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

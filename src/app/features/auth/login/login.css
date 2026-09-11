@@ -185,11 +185,9 @@
    ======================================== */
 
 .field-icon {
+  flex-shrink: 0;
+
   color: #d4a449;
-
-  font-size: 18px;
-
-  line-height: 1;
 }
 
 /* ========================================
@@ -303,25 +301,6 @@
     transform 0.2s ease;
 }
 
-/* SVG */
-
-.password-eye svg {
-  width: 20px;
-  height: 20px;
-
-  display: block;
-
-  fill: none;
-
-  stroke: currentColor;
-
-  stroke-width: 1.7;
-
-  stroke-linecap: round;
-
-  stroke-linejoin: round;
-}
-
 /* Hover */
 
 .password-eye:hover {
@@ -415,14 +394,6 @@ button:hover {
 
 button:active {
   transform: translateY(0);
-}
-
-/* Icono botón */
-
-.button-icon {
-  font-size: 21px;
-
-  line-height: 1;
 }
 
 /* ========================================

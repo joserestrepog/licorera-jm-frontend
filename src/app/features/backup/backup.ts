@@ -1,6 +1,17 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
+import {
+  LucideClock3,
+  LucideDatabaseBackup,
+  LucideFileArchive,
+  LucideHistory,
+  LucideRotateCcw,
+  LucideShieldCheck,
+  LucideTriangleAlert,
+  LucideX,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -9,7 +20,19 @@ import { BackupService } from './backup.service';
 @Component({
   selector: 'app-backup',
   standalone: true,
-  imports: [Sidebar, Topbar, DatePipe],
+  imports: [
+    Sidebar,
+    Topbar,
+    DatePipe,
+    LucideClock3,
+    LucideDatabaseBackup,
+    LucideFileArchive,
+    LucideHistory,
+    LucideRotateCcw,
+    LucideShieldCheck,
+    LucideTriangleAlert,
+    LucideX,
+  ],
   templateUrl: './backup.html',
   styleUrl: './backup.css',
 })

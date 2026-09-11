@@ -12,7 +12,9 @@
 
       <section class="stats-grid">
         <article class="stat-card">
-          <div class="stat-icon">▣</div>
+          <div class="stat-icon">
+            <svg lucidePackageCheck [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div class="stat-info">
             <span class="stat-label">Productos activos</span>
@@ -21,7 +23,9 @@
         </article>
 
         <article class="stat-card">
-          <div class="stat-icon">▤</div>
+          <div class="stat-icon">
+            <svg lucideBoxes [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div class="stat-info">
             <span class="stat-label">Stock disponible</span>
@@ -31,7 +35,9 @@
         </article>
 
         <article class="stat-card">
-          <div class="stat-icon warning">!</div>
+          <div class="stat-icon warning">
+            <svg lucideTriangleAlert [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div class="stat-info">
             <span class="stat-label">Stock bajo</span>
@@ -41,7 +47,9 @@
         </article>
 
         <article class="stat-card">
-          <div class="stat-icon sales">$</div>
+          <div class="stat-icon sales">
+            <svg lucideBanknote [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div class="stat-info">
             <span class="stat-label">Ventas del día</span>
@@ -53,7 +61,9 @@
         </article>
 
         <article class="stat-card">
-          <div class="stat-icon" [class.warning]="!currentCashRegister">$</div>
+          <div class="stat-icon" [class.warning]="!currentCashRegister">
+            <svg lucideWalletCards [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div class="stat-info">
             @if (currentCashRegister) {
@@ -109,7 +119,9 @@
           </div>
         } @else {
           <div class="empty-state">
-            <span class="empty-icon">✓</span>
+            <span class="empty-icon">
+              <svg lucideCircleCheck [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
 
             <div>
               <strong>Inventario en buen estado</strong>
@@ -171,7 +183,9 @@
           </div>
         } @else {
           <div class="empty-state">
-            <span class="empty-icon">▤</span>
+            <span class="empty-icon">
+              <svg lucideReceiptText [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
 
             <div>
               <strong>No hay ventas recientes</strong>

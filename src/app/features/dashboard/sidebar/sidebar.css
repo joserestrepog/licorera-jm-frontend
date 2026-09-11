@@ -93,9 +93,13 @@
 
 .nav-icon {
   width: 20px;
-  text-align: center;
-  font-size: 16px;
+  height: 20px;
+
   flex-shrink: 0;
+
+  color: currentColor;
+
+  display: block;
 }
 
 .nav-item.active .nav-icon {

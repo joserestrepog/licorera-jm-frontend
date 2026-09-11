@@ -27,7 +27,7 @@
             </div>
 
             <button type="button" class="close-button" title="Cerrar" (click)="closeOpenForm()">
-              ✕
+              <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
             </button>
           </div>
 
@@ -99,7 +99,7 @@
             </div>
 
             <button type="button" class="close-button" title="Cerrar" (click)="closeCloseForm()">
-              ✕
+              <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
             </button>
           </div>
 
@@ -193,7 +193,9 @@
 
       <section class="summary-grid">
         <article class="summary-card">
-          <div class="summary-icon">💰</div>
+          <div class="summary-icon">
+            <svg lucideWalletCards [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div>
             <span>Cajas abiertas</span>
@@ -202,7 +204,9 @@
         </article>
 
         <article class="summary-card">
-          <div class="summary-icon">🔒</div>
+          <div class="summary-icon">
+            <svg lucideLockKeyhole [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div>
             <span>Cajas cerradas</span>
@@ -211,7 +215,9 @@
         </article>
 
         <article class="summary-card">
-          <div class="summary-icon">💵</div>
+          <div class="summary-icon">
+            <svg lucideBanknote [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div>
             <span>Ventas en efectivo</span>
@@ -225,7 +231,9 @@
         </article>
 
         <article class="summary-card">
-          <div class="summary-icon">🏦</div>
+          <div class="summary-icon">
+            <svg lucideLandmark [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
           <div>
             <span>Ventas por transferencia</span>
@@ -346,7 +354,9 @@
 
         @if (filteredCashRegisters.length === 0) {
           <div class="empty-state">
-            <span>💰</span>
+            <span class="empty-icon">
+              <svg lucideWalletCards [size]="30" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
 
             <h3>No hay cajas</h3>
 
@@ -429,7 +439,7 @@
                           title="Ver caja"
                           (click)="openCashRegisterDetail(cashRegister)"
                         >
-                          👁️
+                          <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                         </button>
 
                         @if (cashRegister.status === 'OPEN') {
@@ -439,7 +449,12 @@
                             title="Cerrar caja"
                             (click)="openCloseForm(cashRegister)"
                           >
-                            🔒
+                            <svg
+                              lucideLockKeyhole
+                              [size]="18"
+                              [strokeWidth]="1.8"
+                              aria-hidden="true"
+                            ></svg>
                           </button>
                         }
                       </div>
@@ -464,7 +479,9 @@
           <p>Información registrada de la operación de caja.</p>
         </div>
 
-        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">✕</button>
+        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </button>
       </div>
 
       <div class="detail-content">

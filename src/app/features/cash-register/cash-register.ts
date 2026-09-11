@@ -2,6 +2,15 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import {
+  LucideBanknote,
+  LucideEye,
+  LucideLandmark,
+  LucideLockKeyhole,
+  LucideWalletCards,
+  LucideX,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -11,7 +20,20 @@ import { CashRegister } from './cash-register.model';
 @Component({
   selector: 'app-cash-register',
   standalone: true,
-  imports: [Sidebar, Topbar, CurrencyPipe, DatePipe, FormsModule, ReactiveFormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    CurrencyPipe,
+    DatePipe,
+    FormsModule,
+    ReactiveFormsModule,
+    LucideBanknote,
+    LucideEye,
+    LucideLandmark,
+    LucideLockKeyhole,
+    LucideWalletCards,
+    LucideX,
+  ],
   templateUrl: './cash-register.html',
   styleUrl: './cash-register.css',
 })

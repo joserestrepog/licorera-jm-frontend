@@ -1,13 +1,37 @@
 import { Component, inject } from '@angular/core';
-
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  LucideBoxes,
+  LucideChartNoAxesCombined,
+  LucideDatabaseBackup,
+  LucideHouse,
+  LucideLogOut,
+  LucidePackage,
+  LucideShoppingCart,
+  LucideTags,
+  LucideUsers,
+  LucideWalletCards,
+} from '@lucide/angular';
 
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    LucideHouse,
+    LucideShoppingCart,
+    LucideBoxes,
+    LucidePackage,
+    LucideTags,
+    LucideWalletCards,
+    LucideChartNoAxesCombined,
+    LucideUsers,
+    LucideDatabaseBackup,
+    LucideLogOut,
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })

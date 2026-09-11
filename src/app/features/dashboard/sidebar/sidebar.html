@@ -19,7 +19,8 @@
       [routerLinkActiveOptions]="{ exact: true }"
       class="nav-item"
     >
-      <span class="nav-icon">⌂</span>
+      <svg lucideHouse class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
       <span>Dashboard</span>
     </a>
 
@@ -30,27 +31,44 @@
       class="nav-item"
       (click)="goToSales(); $event.preventDefault()"
     >
-      <span class="nav-icon">▣</span>
+      <svg
+        lucideShoppingCart
+        class="nav-icon"
+        [size]="20"
+        [strokeWidth]="1.8"
+        aria-hidden="true"
+      ></svg>
+
       <span>Vender</span>
     </a>
 
     <a routerLink="/inventory" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">▤</span>
+      <svg lucideBoxes class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
       <span>Inventario</span>
     </a>
 
     <a routerLink="/products" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">□</span>
+      <svg lucidePackage class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
       <span>Productos</span>
     </a>
 
     <a routerLink="/categories" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">▦</span>
+      <svg lucideTags class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
       <span>Categorías</span>
     </a>
 
     <a routerLink="/cash-register" routerLinkActive="active" class="nav-item">
-      <span class="nav-icon">$</span>
+      <svg
+        lucideWalletCards
+        class="nav-icon"
+        [size]="20"
+        [strokeWidth]="1.8"
+        aria-hidden="true"
+      ></svg>
+
       <span>Caja</span>
     </a>
 
@@ -58,17 +76,32 @@
       <span class="nav-section-title">Administración</span>
 
       <a routerLink="/report" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">▥</span>
+        <svg
+          lucideChartNoAxesCombined
+          class="nav-icon"
+          [size]="20"
+          [strokeWidth]="1.8"
+          aria-hidden="true"
+        ></svg>
+
         <span>Reportes</span>
       </a>
 
       <a routerLink="/users" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">♙</span>
+        <svg lucideUsers class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
         <span>Usuarios</span>
       </a>
 
       <a routerLink="/backups" routerLinkActive="active" class="nav-item">
-        <span class="nav-icon">↻</span>
+        <svg
+          lucideDatabaseBackup
+          class="nav-icon"
+          [size]="20"
+          [strokeWidth]="1.8"
+          aria-hidden="true"
+        ></svg>
+
         <span>Respaldos</span>
       </a>
     }
@@ -76,7 +109,8 @@
 
   <div class="sidebar-footer">
     <button type="button" class="logout-button" (click)="logout()">
-      <span class="nav-icon">↪</span>
+      <svg lucideLogOut class="nav-icon" [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+
       <span>Cerrar sesión</span>
     </button>
   </div>

@@ -1,6 +1,16 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
+import {
+  LucideBanknote,
+  LucideBoxes,
+  LucideCircleCheck,
+  LucidePackageCheck,
+  LucideReceiptText,
+  LucideTriangleAlert,
+  LucideWalletCards,
+} from '@lucide/angular';
+
 import { Sidebar } from './sidebar/sidebar';
 import { Topbar } from './topbar/topbar';
 
@@ -18,7 +28,19 @@ import { CashRegister } from '../cash-register/cash-register.model';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [Sidebar, Topbar, CurrencyPipe, DatePipe],
+  imports: [
+    Sidebar,
+    Topbar,
+    CurrencyPipe,
+    DatePipe,
+    LucideBanknote,
+    LucideBoxes,
+    LucideCircleCheck,
+    LucidePackageCheck,
+    LucideReceiptText,
+    LucideTriangleAlert,
+    LucideWalletCards,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

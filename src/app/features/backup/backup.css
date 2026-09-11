@@ -118,10 +118,34 @@
 }
 
 .summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   background: #ffffff;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #f4ead1;
+  color: #9d7623;
+}
+
+.summary-icon svg,
+.info-icon svg,
+.loading-state svg,
+.empty-state svg,
+.warning-icon svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .summary-label {
@@ -163,7 +187,6 @@
   flex-shrink: 0;
   border-radius: 10px;
   background: #f4ead0;
-  font-size: 22px;
 }
 
 .backup-info-card h2 {
@@ -341,7 +364,6 @@
 .empty-state > span {
   display: block;
   margin-bottom: 12px;
-  font-size: 42px;
 }
 
 .loading-state h3,

@@ -20,7 +20,13 @@
       <!-- USUARIO -->
       <div class="form-group">
         <label for="username">
-          <span class="field-icon">♙</span>
+          <svg
+            lucideUser
+            class="field-icon"
+            [size]="18"
+            [strokeWidth]="1.8"
+            aria-hidden="true"
+          ></svg>
           Usuario
         </label>
 
@@ -37,7 +43,13 @@
       <!-- CONTRASEÑA -->
       <div class="form-group">
         <label for="password">
-          <span class="field-icon">♙</span>
+          <svg
+            lucideLockKeyhole
+            class="field-icon"
+            [size]="18"
+            [strokeWidth]="1.8"
+            aria-hidden="true"
+          ></svg>
           Contraseña
         </label>
 
@@ -58,18 +70,9 @@
             [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
           >
             @if (passwordVisible) {
-              <!-- Ojo abierto -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
-                <circle cx="12" cy="12" r="2.8" />
-              </svg>
+              <svg lucideEye [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
             } @else {
-              <!-- Ojo cerrado -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 3l18 18" />
-                <path d="M10.6 6.2A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-3.1 3.8" />
-                <path d="M6.1 8.1C3.9 9.6 2.5 12 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1" />
-              </svg>
+              <svg lucideEyeOff [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
             }
           </button>
         </div>
@@ -83,7 +86,7 @@
 
       <!-- BOTÓN -->
       <button type="submit">
-        <span class="button-icon">→</span>
+        <svg lucideLogIn [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
 
         Ingresar
       </button>

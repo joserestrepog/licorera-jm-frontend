@@ -63,6 +63,11 @@
   font-weight: 700;
 }
 
+.stat-icon svg {
+  display: block;
+  flex-shrink: 0;
+}
+
 .stat-icon.warning {
   background: #f3e8d3;
   color: #a66a19;
@@ -192,6 +197,11 @@
   color: #4e8059;
   font-size: 16px;
   font-weight: 700;
+}
+
+.empty-icon svg {
+  display: block;
+  flex-shrink: 0;
 }
 
 .empty-state strong {

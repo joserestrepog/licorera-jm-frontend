@@ -27,44 +27,68 @@
 
       @if (successMessage) {
         <div class="success-message">
-          <span>✓</span>
+          <span>
+            <svg lucideShieldCheck [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </span>
           <span>{{ successMessage }}</span>
         </div>
       }
 
       @if (errorMessage) {
         <div class="error-message">
-          <span>⚠</span>
+          <span>
+            <svg lucideTriangleAlert [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </span>
           <span>{{ errorMessage }}</span>
         </div>
       }
 
       <section class="summary-grid">
         <div class="summary-card">
-          <span class="summary-label">Total respaldos</span>
-          <strong>{{ backups.length }}</strong>
+          <div class="summary-icon">
+            <svg lucideDatabaseBackup [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
+
+          <div>
+            <span class="summary-label">Total respaldos</span>
+            <strong>{{ backups.length }}</strong>
+          </div>
         </div>
 
         <div class="summary-card">
-          <span class="summary-label">Último respaldo</span>
+          <div class="summary-icon">
+            <svg lucideHistory [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
 
-          @if (latestBackup && getBackupDate(latestBackup)) {
-            <strong>
-              {{ getBackupDate(latestBackup) | date: 'dd/MM/yyyy HH:mm' }}
-            </strong>
-          } @else {
-            <strong>Sin respaldos</strong>
-          }
+          <div>
+            <span class="summary-label">Último respaldo</span>
+
+            @if (latestBackup && getBackupDate(latestBackup)) {
+              <strong>
+                {{ getBackupDate(latestBackup) | date: 'dd/MM/yyyy HH:mm' }}
+              </strong>
+            } @else {
+              <strong>Sin respaldos</strong>
+            }
+          </div>
         </div>
 
         <div class="summary-card">
-          <span class="summary-label">Respaldo automático</span>
-          <strong>18:00</strong>
+          <div class="summary-icon">
+            <svg lucideClock3 [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </div>
+
+          <div>
+            <span class="summary-label">Respaldo automático</span>
+            <strong>18:00</strong>
+          </div>
         </div>
       </section>
 
       <section class="backup-info-card">
-        <div class="info-icon">🛡️</div>
+        <div class="info-icon">
+          <svg lucideShieldCheck [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </div>
 
         <div>
           <h2>Protección de la información</h2>
@@ -85,13 +109,17 @@
 
         @if (isLoading) {
           <div class="loading-state">
-            <span>⏳</span>
+            <span>
+              <svg lucideClock3 [size]="36" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
             <h3>Cargando respaldos...</h3>
             <p>Estamos consultando los archivos disponibles.</p>
           </div>
         } @else if (backups.length === 0) {
           <div class="empty-state">
-            <span>🗄️</span>
+            <span>
+              <svg lucideFileArchive [size]="36" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
             <h3>No hay respaldos</h3>
             <p>Todavía no existen respaldos disponibles para restaurar.</p>
 
@@ -150,7 +178,12 @@
                           [disabled]="isRestoring"
                           (click)="openRestoreConfirmation(backup)"
                         >
-                          ↻
+                          <svg
+                            lucideRotateCcw
+                            [size]="18"
+                            [strokeWidth]="1.8"
+                            aria-hidden="true"
+                          ></svg>
                         </button>
                       </div>
                     </td>
@@ -181,13 +214,15 @@
           [disabled]="isRestoring"
           (click)="closeRestoreConfirmation()"
         >
-          ✕
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
         </button>
       </div>
 
       <div class="modal-content">
         <div class="warning-box">
-          <span class="warning-icon">⚠</span>
+          <span class="warning-icon">
+            <svg lucideTriangleAlert [size]="22" [strokeWidth]="1.8" aria-hidden="true"></svg>
+          </span>
 
           <div>
             <strong>Esta operación reemplazará la información actual.</strong>

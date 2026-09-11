@@ -125,7 +125,10 @@
   flex-shrink: 0;
   border-radius: 10px;
   background: #f4ead1;
-  font-size: 21px;
+}
+
+.summary-icon svg {
+  display: block;
 }
 
 .summary-card span {
@@ -454,8 +457,15 @@ tbody tr:hover {
 }
 
 .empty-state > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
   margin-bottom: 10px;
-  font-size: 34px;
+  border-radius: 12px;
+  background: #f4ead1;
+  color: #b68b2c;
 }
 
 .empty-state h3 {
@@ -682,4 +692,12 @@ tbody tr:hover {
   .modal-action-right button {
     flex: 1;
   }
+}
+
+.summary-icon svg,
+.action-button svg,
+.close-button svg,
+.empty-icon svg {
+  display: block;
+  flex-shrink: 0;
 }
