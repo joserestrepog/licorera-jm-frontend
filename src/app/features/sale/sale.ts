@@ -66,7 +66,18 @@ export class SaleComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.restoreSaleDraft();
-    this.checkCashRegister();
+
+    const navigationState = history.state;
+
+    if (navigationState?.cashClosed) {
+      this.canSell = false;
+      this.showCashAlert = true;
+      this.alertMessage =
+        navigationState.cashMessage || 'Para realizar una venta debes abrir una caja primero.';
+    } else {
+      this.checkCashRegister();
+    }
+
     this.loadProducts();
   }
 
