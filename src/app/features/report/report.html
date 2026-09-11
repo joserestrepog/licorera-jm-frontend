@@ -1,0 +1,255 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="page-content">
+      <div class="page-header">
+        <div>
+          <h1>Reportes</h1>
+          <p>Consulta el comportamiento de las ventas y el estado actual del inventario.</p>
+        </div>
+      </div>
+
+      <!-- REPORTE DE VENTAS -->
+      <!-- REPORTE DE VENTAS -->
+      <section class="report-section">
+        <div class="section-header">
+          <div>
+            <h2>Reporte de ventas</h2>
+
+            <p>Consulta las ventas realizadas durante un periodo determinado.</p>
+          </div>
+        </div>
+
+        <div class="filters-card">
+          <div class="quick-periods">
+            <span class="quick-periods-label"> Periodos rápidos </span>
+
+            <div class="quick-periods-buttons">
+              <button
+                type="button"
+                class="period-button"
+                (click)="loadDailyReport()"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              >
+                Diario
+              </button>
+
+              <button
+                type="button"
+                class="period-button"
+                (click)="loadWeeklyReport()"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              >
+                Semanal
+              </button>
+
+              <button
+                type="button"
+                class="period-button"
+                (click)="loadBiweeklyReport()"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              >
+                Quincenal
+              </button>
+
+              <button
+                type="button"
+                class="period-button"
+                (click)="loadMonthlyReport()"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              >
+                Mensual
+              </button>
+            </div>
+          </div>
+
+          <div class="date-filters">
+            <div class="filter-group">
+              <label for="fromDate"> Fecha inicial </label>
+
+              <input
+                id="fromDate"
+                type="date"
+                [(ngModel)]="fromDate"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              />
+            </div>
+
+            <div class="filter-group">
+              <label for="toDate"> Fecha final </label>
+
+              <input
+                id="toDate"
+                type="date"
+                [(ngModel)]="toDate"
+                [disabled]="isLoadingSales || isGeneratingExcel"
+              />
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button
+              type="button"
+              class="primary-button"
+              (click)="loadSalesReports()"
+              [disabled]="isLoadingSales || isGeneratingExcel"
+            >
+              @if (isLoadingSales) {
+                Consultando...
+              } @else {
+                Consultar
+              }
+            </button>
+
+            <button
+              type="button"
+              class="excel-button"
+              (click)="generateSalesExcel()"
+              [disabled]="!salesReport || isLoadingSales || isGeneratingExcel"
+            >
+              @if (isGeneratingExcel) {
+                Generando...
+              } @else {
+                Generar Excel
+              }
+            </button>
+          </div>
+        </div>
+
+        @if (salesErrorMessage) {
+          <div class="error-message">
+            {{ salesErrorMessage }}
+          </div>
+        }
+
+        @if (isLoadingSales && !salesReport) {
+          <div class="loading-card">Cargando reporte de ventas...</div>
+        }
+
+        @if (salesReport) {
+          <div class="summary-grid">
+            <div class="summary-card">
+              <span class="summary-label"> Ventas realizadas </span>
+
+              <strong>
+                {{ salesReport.saleCount }}
+              </strong>
+            </div>
+
+            <div class="summary-card">
+              <span class="summary-label"> Subtotal </span>
+
+              <strong>
+                {{ salesReport.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="summary-card">
+              <span class="summary-label"> Descuentos </span>
+
+              <strong>
+                {{ salesReport.discount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="summary-card highlight">
+              <span class="summary-label"> Total ventas </span>
+
+              <strong>
+                {{ salesReport.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="summary-card">
+              <span class="summary-label"> Costo de ventas </span>
+
+              <strong>
+                {{ salesReport.totalCost | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="summary-card profit">
+              <span class="summary-label"> Ganancia </span>
+
+              <strong>
+                {{ salesReport.profit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="table-card">
+            <div class="table-header">
+              <div>
+                <h3>Ventas por producto</h3>
+
+                <p>Detalle de las unidades vendidas y su rentabilidad.</p>
+              </div>
+
+              <span class="result-count"> {{ salesByProduct.length }} productos </span>
+            </div>
+
+            @if (salesByProduct.length === 0) {
+              <div class="empty-state">
+                <h3>Sin ventas</h3>
+
+                <p>No se encontraron ventas para el periodo seleccionado.</p>
+              </div>
+            } @else {
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Código</th>
+                      <th>Unidades</th>
+                      <th>Ventas</th>
+                      <th>Costo</th>
+                      <th>Ganancia</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (product of salesByProduct; track product.productId) {
+                      <tr>
+                        <td>
+                          <span class="product-name">
+                            {{ product.productName }}
+                          </span>
+                        </td>
+
+                        <td>
+                          {{ product.barcode }}
+                        </td>
+
+                        <td>
+                          {{ product.quantitySold }}
+                        </td>
+
+                        <td>
+                          {{ product.totalSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                        </td>
+
+                        <td>
+                          {{ product.totalCost | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                        </td>
+
+                        <td>
+                          <span class="profit-value">
+                            {{ product.profit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                          </span>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </section>
+  </main>
+</div>

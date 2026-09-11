@@ -38,7 +38,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/cash-register/cash-register').then((m) => m.CashRegisterComponent),
   },
-
+  {
+    path: 'report',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/report/report').then((m) => m.ReportComponent),
+  },
   {
     path: '',
     redirectTo: 'login',
