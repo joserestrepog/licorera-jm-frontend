@@ -10,8 +10,8 @@ import { Role, User, UserRequest } from './user.model';
 export class UserService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/users';
-  private readonly roleApiUrl = 'http://localhost:8080/api/roles';
+  private readonly apiUrl = '/api/users';
+  private readonly roleApiUrl = '/api/roles';
 
   findAll(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);

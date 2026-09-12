@@ -10,7 +10,7 @@ import { InventoryEntryRequest } from './inventory-entry-request.model';
 })
 export class InventoryService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/inventory';
+  private readonly apiUrl = '/api/inventory';
 
   findAll(): Observable<InventoryEntry[]> {
     return this.http.get<InventoryEntry[]>(`${this.apiUrl}/entries`);

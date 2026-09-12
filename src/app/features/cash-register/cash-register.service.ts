@@ -10,7 +10,7 @@ import { CashRegister } from './cash-register.model';
 export class CashRegisterService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/cash-registers';
+  private readonly apiUrl = '/api/cash-registers';
 
   findAll(): Observable<CashRegister[]> {
     return this.http.get<CashRegister[]>(this.apiUrl);

@@ -10,7 +10,7 @@ import { BackupResponse } from './backup.model';
 export class BackupService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/backups';
+  private readonly apiUrl = '/api/backups';
 
   findAll(): Observable<string[]> {
     return this.http.get<string[]>(this.apiUrl);

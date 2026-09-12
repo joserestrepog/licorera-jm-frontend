@@ -10,7 +10,7 @@ import { CurrentUser } from './current-user.model';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:8080/api/auth';
+  private readonly apiUrl = '/api/auth';
   private readonly tokenKey = 'licorera_jm_token';
 
   constructor(private readonly http: HttpClient) {}

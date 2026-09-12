@@ -10,7 +10,7 @@ import { Sale, SaleItem, SaleRequest } from './sale.model';
 export class SaleService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/sales';
+  private readonly apiUrl = '/api/sales';
 
   private readonly saleItemsSubject = new BehaviorSubject<SaleItem[]>([]);
   private readonly discountSubject = new BehaviorSubject<number>(0);

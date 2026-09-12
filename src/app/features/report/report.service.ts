@@ -10,7 +10,7 @@ import { SalesByProduct, SalesReport } from './report.model';
 export class ReportService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/reports';
+  private readonly apiUrl = '/api/reports';
 
   getSalesSummary(from: string, to: string): Observable<SalesReport> {
     return this.http.get<SalesReport>(`${this.apiUrl}/sales/summary`, {
