@@ -466,10 +466,11 @@
   color: #766b64;
 }
 
-.empty-state > span {
-  display: block;
+.empty-state .empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
-  font-size: 42px;
 }
 
 .empty-state h3 {

@@ -227,16 +227,13 @@
 .quantity-control button {
   width: 30px;
   height: 30px;
-
   border: 1px solid #d7cec6;
   border-radius: 6px;
-
   background: #ffffff;
   color: #21130d;
-
-  font-size: 17px;
-  line-height: 1;
-
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -253,10 +250,10 @@
 .remove-button {
   border: none;
   background: transparent;
-
   color: #a79d96;
-
-  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -272,8 +269,10 @@
 }
 
 .empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 15px;
-  font-size: 40px;
 }
 
 .empty-sale h3 {
@@ -453,16 +452,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 46px;
   height: 46px;
-
   margin: 0 auto 15px;
-
   border-radius: 50%;
-
-  font-size: 24px;
-  font-weight: 700;
 }
 
 .alert-icon.warning {
@@ -699,20 +692,13 @@
 .success-circle {
   width: 70px;
   height: 70px;
-
   margin: auto;
-
   border-radius: 50%;
-
   background: #e8f6ea;
   color: #2e7d32;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 34px;
-  font-weight: bold;
 }
 
 .success-modal h2 {

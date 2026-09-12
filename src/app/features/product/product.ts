@@ -2,6 +2,14 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import {
+  LucideEye,
+  LucidePencil,
+  LucideX,
+  LucidePackageOpen,
+  LucideTriangleAlert,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -14,7 +22,18 @@ import { Category } from '../category/category.model';
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [Sidebar, Topbar, CurrencyPipe, FormsModule, ReactiveFormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    CurrencyPipe,
+    FormsModule,
+    ReactiveFormsModule,
+    LucideEye,
+    LucidePencil,
+    LucideX,
+    LucidePackageOpen,
+    LucideTriangleAlert,
+  ],
   templateUrl: './product.html',
   styleUrl: './product.css',
 })

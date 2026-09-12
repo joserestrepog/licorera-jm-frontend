@@ -38,7 +38,7 @@
             </div>
 
             <button type="button" class="close-button" title="Cerrar" (click)="closeForm()">
-              ✕
+              <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
             </button>
           </div>
 
@@ -226,7 +226,9 @@
 
         @if (filteredUsers.length === 0) {
           <div class="empty-state">
-            <span>♙</span>
+            <span class="empty-icon">
+              <svg lucideUserRound size="42" strokeWidth="1.8" aria-hidden="true"></svg>
+            </span>
 
             <h3>No hay usuarios</h3>
 
@@ -282,7 +284,7 @@
                           title="Ver usuario"
                           (click)="openUserDetail(user)"
                         >
-                          👁️
+                          <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
 
                         <button
@@ -291,7 +293,7 @@
                           title="Editar usuario"
                           (click)="openEditForm(user)"
                         >
-                          ✏️
+                          <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
                       </div>
                     </td>
@@ -318,7 +320,9 @@
           <p>Información registrada del usuario.</p>
         </div>
 
-        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">✕</button>
+        <button type="button" class="close-button" title="Cerrar" (click)="closeDetail()">
+          <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+        </button>
       </div>
 
       <div class="detail-content">

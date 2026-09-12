@@ -38,7 +38,7 @@
             </div>
 
             <button type="button" class="close-button" title="Cerrar" (click)="closeCategoryForm()">
-              ✕
+              <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
             </button>
           </div>
 
@@ -141,7 +141,9 @@
 
         @if (filteredCategories.length === 0) {
           <div class="empty-state">
-            <span>📂</span>
+            <span class="empty-icon">
+              <svg lucideFolderOpen [size]="30" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
 
             <h3>No hay categorías</h3>
 
@@ -192,7 +194,7 @@
                           title="Ver categoría"
                           (click)="openCategoryDetail(category)"
                         >
-                          👁️
+                          <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                         </button>
 
                         <button
@@ -201,7 +203,12 @@
                           title="Editar categoría"
                           (click)="openEditForm(category)"
                         >
-                          ✏️
+                          <svg
+                            lucidePencil
+                            [size]="18"
+                            [strokeWidth]="1.8"
+                            aria-hidden="true"
+                          ></svg>
                         </button>
                       </div>
                     </td>
@@ -229,7 +236,7 @@
         </div>
 
         <button type="button" class="close-button" title="Cerrar" (click)="closeCategoryDetail()">
-          ✕
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
         </button>
       </div>
 

@@ -2,6 +2,14 @@ import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, inject } f
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import {
+  LucideEye,
+  LucideX,
+  LucidePackageOpen,
+  LucideCircleCheck,
+  LucidePlus,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -17,7 +25,18 @@ import { Category } from '../category/category.model';
 @Component({
   selector: 'app-inventory',
   standalone: true,
-  imports: [Sidebar, Topbar, CurrencyPipe, DatePipe, ReactiveFormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    CurrencyPipe,
+    DatePipe,
+    ReactiveFormsModule,
+    LucideEye,
+    LucideX,
+    LucidePackageOpen,
+    LucideCircleCheck,
+    LucidePlus,
+  ],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
 })

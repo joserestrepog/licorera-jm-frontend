@@ -25,7 +25,9 @@
               <p>Busca un producto existente o registra uno nuevo mediante su código de barras.</p>
             </div>
 
-            <button type="button" class="close-button" (click)="closeNewEntryForm()">✕</button>
+            <button type="button" class="close-button" title="Cerrar" (click)="closeNewEntryForm()">
+              <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </button>
           </div>
 
           <form [formGroup]="inventoryForm" (ngSubmit)="saveNewEntry()">
@@ -70,7 +72,9 @@
             <!-- ESTADO DEL PRODUCTO -->
             @if (productExists) {
               <div class="product-status existing">
-                <span class="status-icon">✓</span>
+                <span class="status-icon">
+                  <svg lucideCircleCheck [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+                </span>
                 <div>
                   <strong>Producto encontrado</strong>
                   <p>La información del producto se cargó automáticamente.</p>
@@ -80,7 +84,9 @@
               inventoryForm.controls.name.enabled && inventoryForm.controls.barcode.value
             ) {
               <div class="product-status new">
-                <span class="status-icon">+</span>
+                <span class="status-icon">
+                  <svg lucidePlus [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+                </span>
                 <div>
                   <strong>Producto nuevo</strong>
                   <p>Completa la información del producto para registrarlo.</p>
@@ -276,7 +282,9 @@
 
         @if (entries.length === 0) {
           <div class="empty-state">
-            <span>📦</span>
+            <span class="empty-icon">
+              <svg lucidePackageOpen [size]="30" [strokeWidth]="1.8" aria-hidden="true"></svg>
+            </span>
             <h3>No hay entradas de inventario</h3>
             <p>Aún no se han registrado entradas.</p>
           </div>
@@ -321,7 +329,7 @@
                         title="Ver entrada"
                         (click)="openEntryDetail(entry)"
                       >
-                        👁️
+                        <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                       </button>
                     </td>
                   </tr>
@@ -345,7 +353,7 @@
         </div>
 
         <button type="button" class="close-button" title="Cerrar" (click)="closeEntryDetail()">
-          ✕
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
         </button>
       </div>
 

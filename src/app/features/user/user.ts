@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
+import { LucideEye, LucidePencil, LucideUserRound, LucideX } from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -10,7 +12,16 @@ import { Role, User, UserRequest } from './user.model';
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [Sidebar, Topbar, FormsModule, ReactiveFormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    FormsModule,
+    ReactiveFormsModule,
+    LucideEye,
+    LucidePencil,
+    LucideUserRound,
+    LucideX,
+  ],
   templateUrl: './user.html',
   styleUrl: './user.css',
 })

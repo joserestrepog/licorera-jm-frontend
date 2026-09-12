@@ -68,7 +68,7 @@
                         aria-label="Disminuir cantidad"
                         (click)="decreaseQuantity(item)"
                       >
-                        −
+                        <svg lucideMinus size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                       </button>
 
                       <span>{{ item.quantity }}</span>
@@ -78,7 +78,7 @@
                         aria-label="Aumentar cantidad"
                         (click)="increaseQuantity(item)"
                       >
-                        +
+                        <svg lucidePlus size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                       </button>
                     </div>
 
@@ -98,14 +98,16 @@
                       aria-label="Eliminar producto"
                       (click)="removeItem(item)"
                     >
-                      ×
+                      <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                     </button>
                   </div>
                 }
               </div>
             } @else {
               <div class="empty-sale">
-                <div class="empty-icon">🛒</div>
+                <div class="empty-icon">
+                  <svg lucideShoppingCart size="40" strokeWidth="1.8" aria-hidden="true"></svg>
+                </div>
 
                 <h3>No hay productos agregados</h3>
 
@@ -276,7 +278,9 @@
 @if (showSaleSuccess) {
   <div class="success-overlay">
     <div class="success-modal">
-      <div class="success-circle">✓</div>
+      <div class="success-circle">
+        <svg lucideCircleCheck size="36" strokeWidth="1.8" aria-hidden="true"></svg>
+      </div>
 
       <h2>Venta realizada</h2>
 
@@ -293,7 +297,9 @@
 @if (showCashAlert) {
   <div class="alert-overlay">
     <div class="alert-modal">
-      <div class="alert-icon warning">!</div>
+      <div class="alert-icon warning">
+        <svg lucideTriangleAlert size="24" strokeWidth="1.8" aria-hidden="true"></svg>
+      </div>
 
       <h2>Caja no abierta</h2>
 
@@ -310,7 +316,9 @@
 @if (showProductAlert) {
   <div class="alert-overlay">
     <div class="alert-modal">
-      <div class="alert-icon warning">!</div>
+      <div class="alert-icon warning">
+        <svg lucideTriangleAlert size="24" strokeWidth="1.8" aria-hidden="true"></svg>
+      </div>
 
       <h2>Producto no disponible</h2>
 
@@ -327,7 +335,9 @@
 @if (showStockAlert) {
   <div class="alert-overlay">
     <div class="alert-modal">
-      <div class="alert-icon warning">!</div>
+      <div class="alert-icon warning">
+        <svg lucideTriangleAlert size="24" strokeWidth="1.8" aria-hidden="true"></svg>
+      </div>
 
       <h2>Producto sin existencias</h2>
 

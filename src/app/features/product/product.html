@@ -14,33 +14,6 @@
         </div>
       </div>
 
-      <!-- FILTROS -->
-
-      <section class="filters-card">
-        <div class="filter-group search-group">
-          <label for="search"> Buscar producto </label>
-
-          <input
-            id="search"
-            type="text"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange()"
-            placeholder="Nombre, código o proveedor"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="filter-group">
-          <label for="statusFilter"> Estado </label>
-
-          <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
-            <option value="ALL">Todos</option>
-            <option value="ACTIVE">Activos</option>
-            <option value="INACTIVE">Inactivos</option>
-          </select>
-        </div>
-      </section>
-
       <!-- FORMULARIO -->
 
       @if (showProductForm) {
@@ -61,7 +34,7 @@
             </div>
 
             <button type="button" class="close-button" title="Cerrar" (click)="closeProductForm()">
-              ✕
+              <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
             </button>
           </div>
 
@@ -229,6 +202,33 @@
         </section>
       }
 
+      <!-- FILTROS -->
+
+      <section class="filters-card">
+        <div class="filter-group search-group">
+          <label for="search"> Buscar producto </label>
+
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Nombre, código o proveedor"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label for="statusFilter"> Estado </label>
+
+          <select id="statusFilter" [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()">
+            <option value="ALL">Todos</option>
+            <option value="ACTIVE">Activos</option>
+            <option value="INACTIVE">Inactivos</option>
+          </select>
+        </div>
+      </section>
+
       <!-- LISTADO -->
 
       <section class="products-card">
@@ -245,7 +245,9 @@
 
         @if (filteredProducts.length === 0) {
           <div class="empty-state">
-            <span>📦</span>
+            <span class="empty-icon">
+              <svg lucidePackageOpen size="30" strokeWidth="1.8" aria-hidden="true"></svg>
+            </span>
 
             <h3>No hay productos</h3>
 
@@ -318,7 +320,7 @@
                           title="Ver producto"
                           (click)="openProductDetail(product)"
                         >
-                          👁️
+                          <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
 
                         <button
@@ -327,7 +329,7 @@
                           title="Editar producto"
                           (click)="openEditForm(product)"
                         >
-                          ✏️
+                          <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
                       </div>
                     </td>
@@ -355,7 +357,7 @@
         </div>
 
         <button type="button" class="close-button" title="Cerrar" (click)="closeProductDetail()">
-          ✕
+          <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
         </button>
       </div>
 
@@ -440,7 +442,9 @@
 
         @if (isLowStock(selectedProduct)) {
           <div class="low-stock-alert">
-            <span>⚠️</span>
+            <span class="alert-icon">
+              <svg lucideTriangleAlert size="20" strokeWidth="1.8" aria-hidden="true"></svg>
+            </span>
 
             <div>
               <strong>Stock bajo</strong>

@@ -224,8 +224,9 @@
   border: none;
   background: transparent;
   color: #766b64;
-  font-size: 20px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
@@ -479,10 +480,11 @@
   color: #766b64;
 }
 
-.empty-state > span {
-  display: block;
+.empty-state .empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
-  font-size: 42px;
 }
 
 .empty-state h3 {

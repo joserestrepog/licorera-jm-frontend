@@ -11,6 +11,15 @@ import { Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import {
+  LucideCircleCheck,
+  LucideMinus,
+  LucidePlus,
+  LucideShoppingCart,
+  LucideTriangleAlert,
+  LucideX,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -26,7 +35,18 @@ import { SaleItem } from './sale.model';
 @Component({
   selector: 'app-sale',
   standalone: true,
-  imports: [Sidebar, Topbar, CurrencyPipe, FormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    CurrencyPipe,
+    FormsModule,
+    LucideCircleCheck,
+    LucideMinus,
+    LucidePlus,
+    LucideShoppingCart,
+    LucideTriangleAlert,
+    LucideX,
+  ],
   templateUrl: './sale.html',
   styleUrl: './sale.css',
 })

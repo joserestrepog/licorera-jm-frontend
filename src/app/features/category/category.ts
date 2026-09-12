@@ -1,6 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
+import {
+  LucidePencil,
+  LucideEye,
+  LucideFolderOpen,
+  LucideX,
+} from '@lucide/angular';
+
 import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
@@ -10,7 +17,16 @@ import { Category } from './category.model';
 @Component({
   selector: 'app-category',
   standalone: true,
-  imports: [Sidebar, Topbar, FormsModule, ReactiveFormsModule],
+  imports: [
+    Sidebar,
+    Topbar,
+    FormsModule,
+    ReactiveFormsModule,
+    LucideEye,
+    LucidePencil,
+    LucideX,
+    LucideFolderOpen,
+  ],
   templateUrl: './category.html',
   styleUrl: './category.css',
 })
