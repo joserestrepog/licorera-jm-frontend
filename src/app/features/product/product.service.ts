@@ -48,6 +48,10 @@ export class ProductService {
   }
 
   deactivate(id: number): Observable<Product> {
+    return this.http.patch<Product>(`${this.apiUrl}/${id}/deactivate`, {});
+  }
+
+  deleteProduct(id: number): Observable<Product> {
     return this.http.delete<Product>(`${this.apiUrl}/${id}`);
   }
 

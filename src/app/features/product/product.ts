@@ -113,9 +113,10 @@ export class ProductComponent implements OnInit {
         this.selectedCategoryId === 0 || product.categoryId === this.selectedCategoryId;
 
       const matchesStatus =
-        this.selectedStatus === 'ALL' ||
-        (this.selectedStatus === 'ACTIVE' && product.active) ||
-        (this.selectedStatus === 'INACTIVE' && !product.active);
+        (this.selectedStatus === 'ALL' && !product.deleted) ||
+        (this.selectedStatus === 'ACTIVE' && product.active && !product.deleted) ||
+        (this.selectedStatus === 'INACTIVE' && !product.active && !product.deleted) ||
+        (this.selectedStatus === 'DELETED' && product.deleted);
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
@@ -236,6 +237,24 @@ export class ProductComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al desactivar producto:', error);
+      },
+    });
+  }
+
+  deleteProduct(product: Product): void {
+    const confirmed = window.confirm(`¿Deseas eliminar el producto "${product.name}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.productService.deleteProduct(product.id).subscribe({
+      next: () => {
+        this.closeProductDetail();
+        this.loadProducts();
+      },
+      error: (error) => {
+        console.error('Error al eliminar producto:', error);
       },
     });
   }

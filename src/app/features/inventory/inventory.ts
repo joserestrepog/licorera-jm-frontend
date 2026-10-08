@@ -55,10 +55,17 @@ export class InventoryComponent implements OnInit {
   categories: Category[] = [];
   selectedEntry: InventoryEntry | null = null;
 
+  selectedDeletedProduct: Product | null = null;
+  selectedInactiveProduct: Product | null = null;
+
   showNewEntryForm = false;
+  showDeletedProductPrompt = false;
+  showInactiveProductPrompt = false;
+
   productExists = false;
   isSearchingProduct = false;
   isSaving = false;
+  isActivatingDeletedProduct = false;
 
   inventoryForm = this.formBuilder.group({
     barcode: ['', [Validators.required, Validators.maxLength(50)]],
@@ -123,6 +130,10 @@ export class InventoryComponent implements OnInit {
 
   closeNewEntryForm(): void {
     this.showNewEntryForm = false;
+    this.showDeletedProductPrompt = false;
+    this.showInactiveProductPrompt = false;
+    this.selectedDeletedProduct = null;
+    this.selectedInactiveProduct = null;
     this.resetNewEntryForm();
   }
 
@@ -149,20 +160,122 @@ export class InventoryComponent implements OnInit {
       (item) => item.barcode.toLowerCase() === barcode.toLowerCase(),
     );
 
-    if (product) {
-      this.loadExistingProduct(product);
-    } else {
+    if (!product) {
       this.prepareNewProduct();
+      this.isSearchingProduct = false;
+      this.changeDetectorRef.detectChanges();
+      return;
     }
+
+    if (product.deleted) {
+      this.handleDeletedProduct(product);
+      this.isSearchingProduct = false;
+      this.changeDetectorRef.detectChanges();
+      return;
+    }
+
+    if (!product.active) {
+      this.handleInactiveProduct(product);
+      this.isSearchingProduct = false;
+      this.changeDetectorRef.detectChanges();
+      return;
+    }
+
+    this.loadExistingProduct(product);
 
     this.isSearchingProduct = false;
     this.changeDetectorRef.detectChanges();
+  }
+
+  private handleDeletedProduct(product: Product): void {
+    this.selectedDeletedProduct = product;
+    this.showDeletedProductPrompt = true;
+  }
+
+  private handleInactiveProduct(product: Product): void {
+    this.selectedInactiveProduct = product;
+    this.showInactiveProductPrompt = true;
+  }
+
+  cancelInactiveProductPrompt(): void {
+    this.showInactiveProductPrompt = false;
+    this.selectedInactiveProduct = null;
+    this.closeNewEntryForm();
+  }
+
+  activateInactiveProduct(): void {
+    if (!this.selectedInactiveProduct) {
+      return;
+    }
+
+    this.isActivatingDeletedProduct = true;
+
+    const productId = this.selectedInactiveProduct.id;
+
+    this.productService.activate(productId).subscribe({
+      next: (activatedProduct) => {
+        this.products = this.products.map((product) =>
+          product.id === activatedProduct.id ? activatedProduct : product,
+        );
+
+        this.selectedInactiveProduct = null;
+        this.showInactiveProductPrompt = false;
+        this.isActivatingDeletedProduct = false;
+
+        this.loadExistingProduct(activatedProduct);
+
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (error) => {
+        this.isActivatingDeletedProduct = false;
+        console.error('Error al activar producto inactivo:', error);
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  cancelDeletedProductPrompt(): void {
+    this.showDeletedProductPrompt = false;
+    this.selectedDeletedProduct = null;
+    this.closeNewEntryForm();
+  }
+
+  activateDeletedProduct(): void {
+    if (!this.selectedDeletedProduct) {
+      return;
+    }
+
+    this.isActivatingDeletedProduct = true;
+
+    const productId = this.selectedDeletedProduct.id;
+
+    this.productService.activate(productId).subscribe({
+      next: (activatedProduct) => {
+        this.products = this.products.map((product) =>
+          product.id === activatedProduct.id ? activatedProduct : product,
+        );
+
+        this.selectedDeletedProduct = null;
+        this.showDeletedProductPrompt = false;
+        this.isActivatingDeletedProduct = false;
+
+        this.loadExistingProduct(activatedProduct);
+
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (error) => {
+        this.isActivatingDeletedProduct = false;
+        console.error('Error al habilitar producto eliminado:', error);
+        this.changeDetectorRef.detectChanges();
+      },
+    });
   }
 
   private loadExistingProduct(product: Product): void {
     this.productExists = true;
 
     this.inventoryForm.patchValue({
+      barcode: product.barcode,
       name: product.name,
       categoryId: product.categoryId,
       provider: product.provider ?? '',
@@ -188,6 +301,7 @@ export class InventoryComponent implements OnInit {
     this.productExists = false;
 
     this.inventoryForm.patchValue({
+      barcode: this.inventoryForm.controls.barcode.value,
       name: '',
       categoryId: 0,
       provider: '',
@@ -236,8 +350,8 @@ export class InventoryComponent implements OnInit {
     }
 
     const productRequest = {
-      barcode: formValue.barcode!.trim(),
-      name: formValue.name!.trim(),
+      barcode: formValue.barcode.trim(),
+      name: formValue.name.trim(),
       categoryId: formValue.categoryId,
       provider: formValue.provider?.trim() || null,
       purchasePrice: formValue.purchasePrice,
@@ -247,6 +361,7 @@ export class InventoryComponent implements OnInit {
 
     this.productService.create(productRequest).subscribe({
       next: (product) => {
+        this.products = [...this.products, product];
         this.createInventoryEntry(product.barcode, product.id);
       },
       error: (error) => {
@@ -304,6 +419,7 @@ export class InventoryComponent implements OnInit {
     this.productExists = false;
     this.isSearchingProduct = false;
     this.isSaving = false;
+    this.isActivatingDeletedProduct = false;
 
     this.inventoryForm.reset({
       barcode: '',
@@ -322,5 +438,9 @@ export class InventoryComponent implements OnInit {
     this.inventoryForm.controls.provider.disable();
     this.inventoryForm.controls.salePrice.disable();
     this.inventoryForm.controls.minimumStock.disable();
+
+    this.inventoryForm.controls.purchasePrice.enable();
+    this.inventoryForm.controls.quantity.enable();
+    this.inventoryForm.controls.notes.enable();
   }
 }

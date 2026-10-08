@@ -225,6 +225,7 @@
             <option value="ALL">Todos</option>
             <option value="ACTIVE">Activos</option>
             <option value="INACTIVE">Inactivos</option>
+            <option value="DELETED">Eliminados</option>
           </select>
         </div>
       </section>
@@ -305,7 +306,9 @@
                     </td>
 
                     <td>
-                      @if (product.active) {
+                      @if (product.deleted) {
+                        <span class="deleted-badge">Eliminado</span>
+                      } @else if (product.active) {
                         <span class="active-badge">Activo</span>
                       } @else {
                         <span class="inactive-badge">Inactivo</span>
@@ -323,14 +326,16 @@
                           <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
 
-                        <button
-                          type="button"
-                          class="action-button edit-button"
-                          title="Editar producto"
-                          (click)="openEditForm(product)"
-                        >
-                          <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
-                        </button>
+                        @if (!product.deleted) {
+                          <button
+                            type="button"
+                            class="action-button edit-button"
+                            title="Editar producto"
+                            (click)="openEditForm(product)"
+                          >
+                            <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+                          </button>
+                        }
                       </div>
                     </td>
                   </tr>
@@ -397,7 +402,9 @@
             <div class="detail-item">
               <span>Estado</span>
 
-              @if (selectedProduct.active) {
+              @if (selectedProduct.deleted) {
+                <strong>Eliminado</strong>
+              } @else if (selectedProduct.active) {
                 <strong>Activo</strong>
               } @else {
                 <strong>Inactivo</strong>
@@ -440,7 +447,7 @@
           </div>
         </div>
 
-        @if (isLowStock(selectedProduct)) {
+        @if (!selectedProduct.deleted && isLowStock(selectedProduct)) {
           <div class="low-stock-alert">
             <span class="alert-icon">
               <svg lucideTriangleAlert size="20" strokeWidth="1.8" aria-hidden="true"></svg>
@@ -456,25 +463,40 @@
       </div>
 
       <div class="modal-actions">
-        @if (selectedProduct.active) {
+        @if (selectedProduct.deleted) {
+          <button type="button" class="primary-button" (click)="activateProduct(selectedProduct)">
+            Recuperar producto
+          </button>
+        } @else if (selectedProduct.active) {
           <button type="button" class="danger-button" (click)="deactivateProduct(selectedProduct)">
             Desactivar producto
+          </button>
+
+          <button type="button" class="danger-button" (click)="deleteProduct(selectedProduct)">
+            Eliminar producto
           </button>
         } @else {
           <button type="button" class="primary-button" (click)="activateProduct(selectedProduct)">
             Activar producto
           </button>
+
+          <button type="button" class="danger-button" (click)="deleteProduct(selectedProduct)">
+            Eliminar producto
+          </button>
         }
 
         <div class="modal-action-right">
           <button type="button" class="cancel-button" (click)="closeProductDetail()">Cerrar</button>
-          <button
-            type="button"
-            class="edit-button modal-edit-button"
-            (click)="openEditForm(selectedProduct!)"
-          >
-            Editar
-          </button>
+
+          @if (!selectedProduct.deleted) {
+            <button
+              type="button"
+              class="edit-button modal-edit-button"
+              (click)="openEditForm(selectedProduct!)"
+            >
+              Editar
+            </button>
+          }
         </div>
       </div>
     </section>

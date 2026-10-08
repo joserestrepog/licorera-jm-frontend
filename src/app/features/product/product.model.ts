@@ -10,6 +10,7 @@ export interface Product {
   currentStock: number;
   minimumStock: number;
   active: boolean;
+  deleted: boolean;
   createdAt: string;
   updatedAt: string;
 }

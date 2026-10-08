@@ -421,3 +421,150 @@
     </section>
   </div>
 }
+
+@if (showDeletedProductPrompt && selectedDeletedProduct) {
+  <div class="modal-overlay" (click)="cancelDeletedProductPrompt()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Producto eliminado</h2>
+          <p>El producto que buscas se encuentra eliminado.</p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          title="Cerrar"
+          (click)="cancelDeletedProductPrompt()"
+        >
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Producto encontrado</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+              <strong>{{ selectedDeletedProduct.name }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Código de barras</span>
+              <strong>{{ selectedDeletedProduct.barcode }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <p>
+            Este producto está marcado como eliminado y no puede recibir
+            inventario mientras permanezca en ese estado.
+          </p>
+
+          <p>
+            ¿Deseas habilitarlo nuevamente para registrar una nueva entrada
+            de inventario?
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancelDeletedProductPrompt()"
+        >
+          No, volver
+        </button>
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="isActivatingDeletedProduct"
+          (click)="activateDeletedProduct()"
+        >
+          @if (isActivatingDeletedProduct) {
+            Habilitando...
+          } @else {
+            Sí, habilitar
+          }
+        </button>
+      </div>
+    </section>
+  </div>
+}
+
+@if (showInactiveProductPrompt && selectedInactiveProduct) {
+  <div class="modal-overlay" (click)="cancelInactiveProductPrompt()">
+    <section class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h2>Producto inactivo</h2>
+          <p>Debes activar el producto antes de registrar inventario.</p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          title="Cerrar"
+          (click)="cancelInactiveProductPrompt()"
+        >
+          <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Producto encontrado</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span>Nombre</span>
+              <strong>{{ selectedInactiveProduct.name }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Código de barras</span>
+              <strong>{{ selectedInactiveProduct.barcode }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <p>
+            Este producto está inactivo. Para ingresar nuevas unidades,
+            primero debes activarlo.
+          </p>
+
+          <p>¿Deseas activarlo y continuar con el registro de inventario?</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancelInactiveProductPrompt()"
+        >
+          No, volver
+        </button>
+
+        <button
+          type="button"
+          class="primary-button"
+          [disabled]="isActivatingDeletedProduct"
+          (click)="activateInactiveProduct()"
+        >
+          @if (isActivatingDeletedProduct) {
+            Activando...
+          } @else {
+            Sí, activar
+          }
+        </button>
+      </div>
+    </section>
+  </div>
+}
