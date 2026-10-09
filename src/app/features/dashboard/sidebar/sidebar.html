@@ -75,6 +75,18 @@
     @if (isAdmin()) {
       <span class="nav-section-title">Administración</span>
 
+      <a routerLink="/sales-history" routerLinkActive="active" class="nav-item">
+        <svg
+          lucideReceipt
+          class="nav-icon"
+          [size]="20"
+          [strokeWidth]="1.8"
+          aria-hidden="true"
+        ></svg>
+
+        <span>Ventas</span>
+      </a>
+
       <a routerLink="/report" routerLinkActive="active" class="nav-item">
         <svg
           lucideChartNoAxesCombined

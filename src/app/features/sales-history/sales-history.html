@@ -1,0 +1,340 @@
+﻿<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-area">
+    <app-topbar></app-topbar>
+
+    <main class="main-content">
+      <section class="sales-history-page">
+        <header class="page-header">
+          <div>
+            <h1>Historial de ventas</h1>
+            <p>Consulta las ventas registradas y administra sus cancelaciones.</p>
+          </div>
+        </header>
+
+        @if (errorMessage) {
+          <div class="alert alert-error" role="alert">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="alert alert-success" role="status">
+            {{ successMessage }}
+          </div>
+        }
+
+        <section class="filter-card">
+          <div class="filter-field">
+            <label for="startDate">Fecha inicial</label>
+            <input id="startDate" type="date" [(ngModel)]="startDate" [max]="endDate || null" />
+          </div>
+
+          <div class="filter-field">
+            <label for="endDate">Fecha final</label>
+            <input id="endDate" type="date" [(ngModel)]="endDate" [min]="startDate || null" />
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" class="primary-button" (click)="consultSales()">Consultar</button>
+
+            <button type="button" class="secondary-button" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </section>
+
+        <section class="table-card">
+          <div class="table-heading">
+            <h2>Ventas registradas</h2>
+            <span>{{ filteredSales.length }} resultado(s)</span>
+          </div>
+
+          @if (isLoading) {
+            <div class="empty-state">Cargando historial de ventas...</div>
+          } @else if (filteredSales.length === 0) {
+            <div class="empty-state">
+              No hay ventas que coincidan con los filtros seleccionados.
+            </div>
+          } @else {
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>N.º de venta</th>
+                    <th>Fecha y hora</th>
+                    <th>Empleado</th>
+                    <th>Caja</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th class="actions-heading">Acciones</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @for (sale of filteredSales; track trackBySaleId($index, sale)) {
+                    <tr>
+                      <td class="sale-number">#{{ sale.saleNumber }}</td>
+                      <td>{{ sale.saleDate | date: 'dd/MM/yyyy, HH:mm' }}</td>
+                      <td>{{ sale.username }}</td>
+                      <td>#{{ sale.cashRegisterId }}</td>
+                      <td class="amount">
+                        {{ sale.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                      </td>
+                      <td>
+                        <span
+                          class="status-badge"
+                          [class.completed]="sale.status === 'COMPLETED'"
+                          [class.cancelled]="sale.status === 'CANCELLED'"
+                        >
+                          {{ getStatusLabel(sale.status) }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="table-actions">
+                          <button
+                            type="button"
+                            class="action-button view-button"
+                            title="Ver detalle"
+                            aria-label="Ver detalle de la venta"
+                            (click)="openSaleDetail(sale)"
+                          >
+                            <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+                          </button>
+
+                          @if (sale.status === 'COMPLETED') {
+                            <button
+                              type="button"
+                              class="action-button cancel-action-button"
+                              title="Cancelar venta"
+                              aria-label="Cancelar venta"
+                              (click)="openCancelDialog(sale)"
+                            >
+                              <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
+                            </button>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+      </section>
+    </main>
+  </div>
+</div>
+
+@if (showDetail && selectedSale) {
+  <div class="modal-overlay" (click)="closeSaleDetail()">
+    <section
+      class="modal-card detail-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="saleDetailTitle"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <h2 id="saleDetailTitle">Detalle de la venta #{{ selectedSale.saleNumber }}</h2>
+          <p>{{ selectedSale.saleDate | date: 'dd/MM/yyyy, HH:mm' }}</p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar detalle"
+          (click)="closeSaleDetail()"
+        >
+          <svg lucideX [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span>Empleado</span>
+            <strong>{{ selectedSale.username }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Caja</span>
+            <strong>#{{ selectedSale.cashRegisterId }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Estado</span>
+            <strong>{{ getStatusLabel(selectedSale.status) }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Subtotal</span>
+            <strong>{{
+              selectedSale.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+            }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Descuento</span>
+            <strong>{{
+              selectedSale.discount | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+            }}</strong>
+          </div>
+          <div class="detail-item">
+            <span>Total</span>
+            <strong class="detail-total">{{
+              selectedSale.total | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+            }}</strong>
+          </div>
+        </div>
+
+        <h3>Productos</h3>
+        @if (selectedSale.items.length === 0) {
+          <p class="muted-text">Esta venta no tiene productos asociados.</p>
+        } @else {
+          <div class="table-container detail-table-container">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Código</th>
+                  <th>Cantidad</th>
+                  <th>Precio unitario</th>
+                  <th>Descuento</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of selectedSale.items; track item.id) {
+                  <tr>
+                    <td>{{ item.productName }}</td>
+                    <td>{{ item.barcode || '—' }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unitPrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                    <td>{{ item.discount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                    <td>{{ item.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <h3>Pagos</h3>
+        @if (selectedSale.payments.length === 0) {
+          <p class="muted-text">Esta venta no tiene pagos asociados.</p>
+        } @else {
+          <div class="table-container detail-table-container">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Método de pago</th>
+                  <th>Fecha</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (payment of selectedSale.payments; track payment.id) {
+                  <tr>
+                    <td>{{ payment.paymentMethodName }}</td>
+                    <td>{{ payment.paymentDate | date: 'dd/MM/yyyy, HH:mm' }}</td>
+                    <td>{{ payment.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        @if (selectedSale.status === 'CANCELLED') {
+          <div class="cancellation-info">
+            <h3>Información de cancelación</h3>
+            <p>
+              <strong>Fecha:</strong> {{ selectedSale.cancelledAt | date: 'dd/MM/yyyy, HH:mm' }}
+            </p>
+            <p>
+              <strong>Usuario:</strong> {{ selectedSale.cancelledByUsername || 'No disponible' }}
+            </p>
+            <p>
+              <strong>Motivo:</strong>
+              {{ selectedSale.cancellationReason || 'Sin motivo registrado' }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <footer class="modal-footer">
+        @if (selectedSale.status === 'COMPLETED') {
+          <button type="button" class="danger-button" (click)="openCancelDialog(selectedSale)">
+            Cancelar venta
+          </button>
+        }
+
+        <button type="button" class="primary-button" (click)="closeSaleDetail()">Cerrar</button>
+      </footer>
+    </section>
+  </div>
+}
+
+@if (showCancelDialog && saleToCancel) {
+  <div class="modal-overlay" (click)="closeCancelDialog()">
+    <section
+      class="modal-card cancel-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cancelSaleTitle"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <h2 id="cancelSaleTitle">Cancelar venta #{{ saleToCancel.saleNumber }}</h2>
+          <p>Esta acción no se puede deshacer desde la aplicación.</p>
+        </div>
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Cerrar ventana"
+          [disabled]="isSaving"
+          (click)="closeCancelDialog()"
+        >
+          <svg lucideX [size]="20" [strokeWidth]="1.8" aria-hidden="true"></svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div class="warning-panel">
+          Al confirmar, la venta quedará marcada como cancelada y el sistema aplicará los ajustes de
+          inventario y caja correspondientes.
+        </div>
+
+        <label for="cancelReason">Motivo de cancelación (opcional)</label>
+        <textarea
+          id="cancelReason"
+          name="cancelReason"
+          [(ngModel)]="cancelReason"
+          maxlength="255"
+          rows="4"
+          placeholder="Escribe el motivo de la cancelación..."
+          [disabled]="isSaving"
+        ></textarea>
+        <span class="character-count">{{ cancelReason.length }}/255 caracteres</span>
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="secondary-button"
+          [disabled]="isSaving"
+          (click)="closeCancelDialog()"
+        >
+          Volver
+        </button>
+        <button
+          type="button"
+          class="danger-button"
+          [disabled]="isSaving || cancelReason.length > 255"
+          (click)="confirmCancellation()"
+        >
+          {{ isSaving ? 'Cancelando...' : 'Confirmar cancelación' }}
+        </button>
+      </footer>
+    </section>
+  </div>
+}
