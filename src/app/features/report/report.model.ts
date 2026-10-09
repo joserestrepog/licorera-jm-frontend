@@ -16,3 +16,14 @@ export interface SalesByProduct {
   totalCost: number;
   profit: number;
 }
+
+export interface InventoryStock {
+  productId: number;
+  productName: string;
+  barcode: string;
+  categoryName: string;
+  currentStock: number;
+  minimumStock: number;
+  purchasePrice: number;
+  stockValue: number;
+}

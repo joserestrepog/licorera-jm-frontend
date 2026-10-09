@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { SalesByProduct, SalesReport } from './report.model';
+import { InventoryStock, SalesByProduct, SalesReport } from './report.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,5 +28,9 @@ export class ReportService {
         to,
       },
     });
+  }
+
+  getInventoryStock(): Observable<InventoryStock[]> {
+    return this.http.get<InventoryStock[]>(`${this.apiUrl}/inventory/stock`);
   }
 }

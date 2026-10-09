@@ -250,6 +250,128 @@
           </div>
         }
       </section>
+
+      <!-- REPORTE DE INVENTARIO -->
+      <section class="report-section">
+        <div class="section-header">
+          <div>
+            <h2>Reporte de inventario</h2>
+            <p>Consulta las existencias actuales y el valor de compra del inventario.</p>
+          </div>
+        </div>
+
+        <div class="filter-actions" style="margin-bottom: 18px">
+          <button
+            type="button"
+            class="excel-button"
+            (click)="generateInventoryExcel()"
+            [disabled]="
+              isLoadingInventory || isGeneratingInventoryExcel || inventoryStock.length === 0
+            "
+          >
+            @if (isGeneratingInventoryExcel) {
+              Generando...
+            } @else {
+              Generar Excel
+            }
+          </button>
+        </div>
+
+        @if (inventoryErrorMessage) {
+          <div class="error-message">
+            {{ inventoryErrorMessage }}
+          </div>
+        }
+
+        @if (isLoadingInventory) {
+          <div class="loading-card">Cargando reporte de inventario...</div>
+        } @else {
+          <div class="inventory-summary">
+            <div class="inventory-summary-card">
+              <span>Productos registrados</span>
+              <strong>{{ inventoryStock.length }}</strong>
+            </div>
+
+            <div class="inventory-summary-card">
+              <span>Unidades disponibles</span>
+              <strong>{{ totalInventoryUnits }}</strong>
+            </div>
+
+            <div class="inventory-summary-card">
+              <span>Valor total del inventario</span>
+              <strong>
+                {{ totalInventoryValue | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+          </div>
+
+          @if (inventoryStock.length === 0) {
+            <div class="table-card">
+              <div class="empty-state">
+                <h3>Sin productos</h3>
+                <p>No se encontraron productos en el inventario.</p>
+              </div>
+            </div>
+          } @else {
+            <div class="table-card">
+              <div class="table-header">
+                <div>
+                  <h3>Existencias por producto</h3>
+                  <p>Unidades disponibles y valor calculado al costo de compra.</p>
+                </div>
+
+                <span class="result-count"> {{ inventoryStock.length }} productos </span>
+              </div>
+
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Código</th>
+                      <th>Categoría</th>
+                      <th>Unidades</th>
+                      <th>Stock mínimo</th>
+                      <th>Costo unitario</th>
+                      <th>Valor total</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    @for (product of inventoryStock; track product.productId) {
+                      <tr>
+                        <td>
+                          <span class="product-name">
+                            {{ product.productName }}
+                          </span>
+                        </td>
+                        <td>{{ product.barcode || '—' }}</td>
+                        <td>{{ product.categoryName }}</td>
+                        <td>
+                          <span
+                            class="stock-badge"
+                            [class.low-stock]="product.currentStock <= product.minimumStock"
+                            [class.normal-stock]="product.currentStock > product.minimumStock"
+                          >
+                            {{ product.currentStock }}
+                          </span>
+                        </td>
+                        <td>{{ product.minimumStock }}</td>
+                        <td>
+                          {{ product.purchasePrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                        </td>
+                        <td>
+                          {{ product.stockValue | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        }
+      </section>
     </section>
   </main>
 </div>

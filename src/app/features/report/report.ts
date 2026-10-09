@@ -7,7 +7,7 @@ import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
 import { ReportService } from './report.service';
-import { SalesByProduct, SalesReport } from './report.model';
+import { InventoryStock, SalesByProduct, SalesReport } from './report.model';
 
 @Component({
   selector: 'app-report',
@@ -31,9 +31,17 @@ export class ReportComponent implements OnInit {
 
   salesErrorMessage = '';
 
+  inventoryStock: InventoryStock[] = [];
+
+  isLoadingInventory = false;
+  isGeneratingInventoryExcel = false;
+
+  inventoryErrorMessage = '';
+
   ngOnInit(): void {
     this.initializeDates();
     this.loadSalesReports();
+    this.loadInventoryReport();
   }
 
   private initializeDates(): void {
@@ -164,6 +172,141 @@ export class ReportComponent implements OnInit {
         this.changeDetectorRef.detectChanges();
       },
     });
+  }
+
+  loadInventoryReport(): void {
+    this.inventoryErrorMessage = '';
+    this.isLoadingInventory = true;
+
+    this.reportService.getInventoryStock().subscribe({
+      next: (inventoryStock) => {
+        this.inventoryStock = inventoryStock;
+        this.isLoadingInventory = false;
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (error) => {
+        this.isLoadingInventory = false;
+        this.inventoryErrorMessage = 'No fue posible cargar el reporte de inventario.';
+
+        console.error('Error al cargar el inventario:', error);
+
+        this.changeDetectorRef.detectChanges();
+      },
+    });
+  }
+
+  generateInventoryExcel(): void {
+    if (this.inventoryStock.length === 0) {
+      this.inventoryErrorMessage = 'No hay productos para generar el archivo Excel.';
+      return;
+    }
+
+    this.inventoryErrorMessage = '';
+    this.isGeneratingInventoryExcel = true;
+
+    try {
+      this.createInventoryExcel();
+    } catch (error) {
+      this.inventoryErrorMessage = 'No fue posible generar el Excel del inventario.';
+
+      console.error('Error al generar el Excel del inventario:', error);
+    } finally {
+      this.isGeneratingInventoryExcel = false;
+      this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  private createInventoryExcel(): void {
+    const workbook = XLSX.utils.book_new();
+
+    const totalUnits = this.inventoryStock.reduce(
+      (total, product) => total + product.currentStock,
+      0,
+    );
+
+    const totalInventoryValue = this.inventoryStock.reduce(
+      (total, product) => total + product.stockValue,
+      0,
+    );
+
+    const inventoryData = [
+      ['REPORTE DE INVENTARIO'],
+      [],
+      ['Productos registrados', this.inventoryStock.length],
+      ['Unidades disponibles', totalUnits],
+      ['Valor total del inventario', totalInventoryValue],
+      [],
+      [
+        'Producto',
+        'Código de barras',
+        'Categoría',
+        'Unidades disponibles',
+        'Costo unitario',
+        'Valor total del inventario',
+      ],
+      ...this.inventoryStock.map((product) => [
+        product.productName,
+        product.barcode,
+        product.categoryName,
+        product.currentStock,
+        product.purchasePrice,
+        product.stockValue,
+      ]),
+    ];
+
+    const worksheet = XLSX.utils.aoa_to_sheet(inventoryData);
+
+    // Formato de moneda colombiana.
+    const currencyFormat = '"$"#,##0';
+
+    // Aplicar formato al valor total del resumen (celda B5).
+    if (worksheet['B5']) {
+      worksheet['B5'].z = currencyFormat;
+    }
+
+    // Aplicar formato a los precios y valores de cada producto.
+    // Los datos comienzan en la fila 8 de Excel (índice 7 en JavaScript).
+    for (let row = 7; row < inventoryData.length; row++) {
+      const purchasePriceCell = XLSX.utils.encode_cell({
+        r: row,
+        c: 4,
+      });
+
+      const stockValueCell = XLSX.utils.encode_cell({
+        r: row,
+        c: 5,
+      });
+
+      if (worksheet[purchasePriceCell]) {
+        worksheet[purchasePriceCell].z = currencyFormat;
+      }
+
+      if (worksheet[stockValueCell]) {
+        worksheet[stockValueCell].z = currencyFormat;
+      }
+    }
+
+    // Ajustar el ancho de las seis columnas.
+    worksheet['!cols'] = [
+      { wch: 35 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 18 },
+      { wch: 30 },
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario');
+
+    XLSX.writeFile(workbook, 'reporte-inventario.xlsx');
+  }
+
+  get totalInventoryUnits(): number {
+    return this.inventoryStock.reduce((total, product) => total + product.currentStock, 0);
+  }
+
+  get totalInventoryValue(): number {
+    return this.inventoryStock.reduce((total, product) => total + product.stockValue, 0);
   }
 
   generateSalesExcel(): void {
