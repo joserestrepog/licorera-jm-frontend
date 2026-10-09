@@ -113,6 +113,15 @@ export class SaleComponent implements OnInit, AfterViewInit {
     this.saleService.setPaymentMethod(this.selectedPaymentMethod);
   }
 
+  private refreshSaleAfterItemChange(): void {
+    if (this.discount > this.subtotal) {
+      this.discount = this.subtotal;
+      this.saleService.setDiscount(this.discount);
+    }
+
+    this.saveSaleDraft();
+  }
+
   onDiscountChange(value: number): void {
     this.discount = Number(value) || 0;
     this.saleService.setDiscount(this.discount);
@@ -288,7 +297,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
 
     item.quantity++;
 
-    this.saveSaleDraft();
+    this.refreshSaleAfterItemChange();
 
     this.focusBarcodeInput();
   }
@@ -297,7 +306,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
     if (item.quantity > 1) {
       item.quantity--;
 
-      this.saveSaleDraft();
+      this.refreshSaleAfterItemChange();
 
       this.focusBarcodeInput();
       return;
@@ -309,7 +318,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
   removeItem(item: SaleItem): void {
     this.saleItems = this.saleItems.filter((saleItem) => saleItem.product.id !== item.product.id);
 
-    this.saveSaleDraft();
+    this.refreshSaleAfterItemChange();
 
     this.focusBarcodeInput();
   }

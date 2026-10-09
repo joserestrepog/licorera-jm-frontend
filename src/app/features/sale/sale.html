@@ -207,19 +207,60 @@
       </div>
 
       <div class="confirmation-items">
-        @for (item of saleItems; track item.product.id) {
-          <div class="confirmation-item">
-            <div>
-              <strong>{{ item.product.name }}</strong>
-              <span>
-                {{ item.quantity }} ×
-                {{ item.product.salePrice | currency: 'COP' : 'symbol' : '1.0-0' }}
-              </span>
-            </div>
+        @if (saleItems.length > 0) {
+          @for (item of saleItems; track item.product.id) {
+            <div class="confirmation-item">
+              <div class="confirmation-product">
+                <strong>{{ item.product.name }}</strong>
+                <span>
+                  {{ item.product.salePrice | currency: 'COP' : 'symbol' : '1.0-0' }}
+                  por unidad
+                </span>
+              </div>
 
-            <strong>
-              {{ getItemTotal(item) | currency: 'COP' : 'symbol' : '1.0-0' }}
-            </strong>
+              <div class="confirmation-item-controls">
+                <div class="quantity-control">
+                  <button
+                    type="button"
+                    aria-label="Disminuir cantidad"
+                    [disabled]="processingSale"
+                    (click)="decreaseQuantity(item)"
+                  >
+                    <svg lucideMinus size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+                  </button>
+
+                  <span>{{ item.quantity }}</span>
+
+                  <button
+                    type="button"
+                    aria-label="Aumentar cantidad"
+                    [disabled]="processingSale"
+                    (click)="increaseQuantity(item)"
+                  >
+                    <svg lucidePlus size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+                  </button>
+                </div>
+
+                <strong class="confirmation-item-total">
+                  {{ getItemTotal(item) | currency: 'COP' : 'symbol' : '1.0-0' }}
+                </strong>
+
+                <button
+                  type="button"
+                  class="remove-button"
+                  aria-label="Eliminar producto"
+                  [disabled]="processingSale"
+                  (click)="removeItem(item)"
+                >
+                  <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+                </button>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="confirmation-empty">
+            <strong>No hay productos en esta venta.</strong>
+            <p>Cancela para volver a la pantalla principal y agregar productos.</p>
           </div>
         }
       </div>
@@ -265,7 +306,7 @@
         <button
           type="button"
           class="primary-button"
-          [disabled]="processingSale"
+          [disabled]="processingSale || saleItems.length === 0"
           (click)="confirmSale()"
         >
           {{ processingSale ? 'Procesando...' : 'Confirmar venta' }}
