@@ -7,7 +7,7 @@ import { Sidebar } from '../dashboard/sidebar/sidebar';
 import { Topbar } from '../dashboard/topbar/topbar';
 
 import { ReportService } from './report.service';
-import { InventoryStock, SalesByProduct, SalesReport } from './report.model';
+import { InventoryStock, SalesByDay, SalesByProduct, SalesReport } from './report.model';
 
 @Component({
   selector: 'app-report',
@@ -325,16 +325,27 @@ export class ReportComponent implements OnInit {
 
     this.reportService.getSalesSummary(this.fromDate, this.toDate).subscribe({
       next: (salesReport) => {
-        this.salesReport = salesReport;
-
         this.reportService.getSalesByProduct(this.fromDate, this.toDate).subscribe({
           next: (salesByProduct) => {
-            this.salesByProduct = salesByProduct;
+            this.reportService.getSalesByDay(this.fromDate, this.toDate).subscribe({
+              next: (salesByDay) => {
+                this.salesReport = salesReport;
+                this.salesByProduct = salesByProduct;
 
-            this.createSalesExcel();
+                this.createSalesExcel(salesByDay);
 
-            this.isGeneratingExcel = false;
-            this.changeDetectorRef.detectChanges();
+                this.isGeneratingExcel = false;
+                this.changeDetectorRef.detectChanges();
+              },
+              error: (error) => {
+                this.isGeneratingExcel = false;
+                this.salesErrorMessage =
+                  'No fue posible obtener el desglose diario para generar el Excel.';
+
+                console.error('Error al obtener las ventas por día:', error);
+                this.changeDetectorRef.detectChanges();
+              },
+            });
           },
           error: (error) => {
             this.isGeneratingExcel = false;
@@ -342,7 +353,6 @@ export class ReportComponent implements OnInit {
               'No fue posible obtener el detalle de ventas para generar el Excel.';
 
             console.error('Error al obtener las ventas por producto:', error);
-
             this.changeDetectorRef.detectChanges();
           },
         });
@@ -353,19 +363,20 @@ export class ReportComponent implements OnInit {
           'No fue posible obtener el resumen de ventas para generar el Excel.';
 
         console.error('Error al obtener el resumen de ventas:', error);
-
         this.changeDetectorRef.detectChanges();
       },
     });
   }
 
-  private createSalesExcel(): void {
+  private createSalesExcel(salesByDay: SalesByDay[]): void {
     if (!this.salesReport) {
       return;
     }
 
     const workbook = XLSX.utils.book_new();
+    const currencyFormat = '"$"#,##0';
 
+    // HOJA 1: RESUMEN
     const summaryData = [
       ['REPORTE DE VENTAS'],
       [],
@@ -384,8 +395,18 @@ export class ReportComponent implements OnInit {
 
     summarySheet['!cols'] = [{ wch: 25 }, { wch: 25 }];
 
+    // Los importes están en B7:B11. B6 contiene el número de ventas.
+    for (let row = 6; row <= 10; row++) {
+      const cell = `B${row + 1}`;
+
+      if (summarySheet[cell]) {
+        summarySheet[cell].z = currencyFormat;
+      }
+    }
+
     XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen');
 
+    // HOJA 2: VENTAS POR PRODUCTO
     const productData = [
       ['Producto', 'Código de barras', 'Unidades vendidas', 'Total ventas', 'Costo', 'Ganancia'],
       ...this.salesByProduct.map((product) => [
@@ -409,7 +430,80 @@ export class ReportComponent implements OnInit {
       { wch: 18 },
     ];
 
+    // Columnas D, E y F contienen importes monetarios.
+    for (let row = 1; row < productData.length; row++) {
+      for (let col = 3; col <= 5; col++) {
+        const cell = XLSX.utils.encode_cell({ r: row, c: col });
+
+        if (productSheet[cell]) {
+          productSheet[cell].z = currencyFormat;
+        }
+      }
+    }
+
     XLSX.utils.book_append_sheet(workbook, productSheet, 'Ventas por producto');
+
+    // HOJA 3: VENTAS POR DÍA
+    const dailySalesMap = new Map(salesByDay.map((day) => [day.saleDate, day]));
+
+    const dailyData: (string | number)[][] = [
+      [
+        'Fecha',
+        'Ventas realizadas',
+        'Subtotal',
+        'Descuentos',
+        'Total ventas',
+        'Costo de ventas',
+        'Ganancia',
+      ],
+    ];
+
+    // Incluir todos los días del periodo, incluso aquellos sin ventas.
+    const currentDate = new Date(`${this.fromDate}T00:00:00`);
+    const lastDate = new Date(`${this.toDate}T00:00:00`);
+
+    while (currentDate <= lastDate) {
+      const date = this.formatDate(currentDate);
+
+      const day = dailySalesMap.get(date);
+
+      dailyData.push([
+        date,
+        day?.saleCount ?? 0,
+        day?.subtotal ?? 0,
+        day?.discount ?? 0,
+        day?.total ?? 0,
+        day?.totalCost ?? 0,
+        day?.profit ?? 0,
+      ]);
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    const dailySheet = XLSX.utils.aoa_to_sheet(dailyData);
+
+    dailySheet['!cols'] = [
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 20 },
+      { wch: 18 },
+    ];
+
+    // Columnas C a G contienen importes monetarios.
+    for (let row = 1; row < dailyData.length; row++) {
+      for (let col = 2; col <= 6; col++) {
+        const cell = XLSX.utils.encode_cell({ r: row, c: col });
+
+        if (dailySheet[cell]) {
+          dailySheet[cell].z = currencyFormat;
+        }
+      }
+    }
+
+    XLSX.utils.book_append_sheet(workbook, dailySheet, 'Ventas por día');
 
     const fileName = `reporte-ventas-${this.fromDate}-a-${this.toDate}.xlsx`;
 

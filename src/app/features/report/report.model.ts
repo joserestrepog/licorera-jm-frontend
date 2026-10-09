@@ -27,3 +27,13 @@ export interface InventoryStock {
   purchasePrice: number;
   stockValue: number;
 }
+
+export interface SalesByDay {
+  saleDate: string;
+  saleCount: number;
+  subtotal: number;
+  discount: number;
+  total: number;
+  totalCost: number;
+  profit: number;
+}
