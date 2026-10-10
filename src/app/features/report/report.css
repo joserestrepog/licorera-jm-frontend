@@ -511,3 +511,15 @@ tbody tr:hover {
     flex-direction: column;
   }
 }
+
+.inventory-filters-card {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.inventory-filters-card .filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}

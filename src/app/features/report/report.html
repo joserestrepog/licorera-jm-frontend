@@ -179,75 +179,6 @@
               </strong>
             </div>
           </div>
-
-          <div class="table-card">
-            <div class="table-header">
-              <div>
-                <h3>Ventas por producto</h3>
-
-                <p>Detalle de las unidades vendidas y su rentabilidad.</p>
-              </div>
-
-              <span class="result-count"> {{ salesByProduct.length }} productos </span>
-            </div>
-
-            @if (salesByProduct.length === 0) {
-              <div class="empty-state">
-                <h3>Sin ventas</h3>
-
-                <p>No se encontraron ventas para el periodo seleccionado.</p>
-              </div>
-            } @else {
-              <div class="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Producto</th>
-                      <th>Código</th>
-                      <th>Unidades</th>
-                      <th>Ventas</th>
-                      <th>Costo</th>
-                      <th>Ganancia</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    @for (product of salesByProduct; track product.productId) {
-                      <tr>
-                        <td>
-                          <span class="product-name">
-                            {{ product.productName }}
-                          </span>
-                        </td>
-
-                        <td>
-                          {{ product.barcode }}
-                        </td>
-
-                        <td>
-                          {{ product.quantitySold }}
-                        </td>
-
-                        <td>
-                          {{ product.totalSales | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
-                        </td>
-
-                        <td>
-                          {{ product.totalCost | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
-                        </td>
-
-                        <td>
-                          <span class="profit-value">
-                            {{ product.profit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
-                          </span>
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-          </div>
         }
       </section>
 
@@ -260,21 +191,23 @@
           </div>
         </div>
 
-        <div class="filter-actions" style="margin-bottom: 18px">
-          <button
-            type="button"
-            class="excel-button"
-            (click)="generateInventoryExcel()"
-            [disabled]="
-              isLoadingInventory || isGeneratingInventoryExcel || inventoryStock.length === 0
-            "
-          >
-            @if (isGeneratingInventoryExcel) {
-              Generando...
-            } @else {
-              Generar Excel
-            }
-          </button>
+        <div class="filters-card inventory-filters-card">
+          <div class="filter-actions">
+            <button
+              type="button"
+              class="excel-button"
+              (click)="generateInventoryExcel()"
+              [disabled]="
+                isLoadingInventory || isGeneratingInventoryExcel || inventoryStock.length === 0
+              "
+            >
+              @if (isGeneratingInventoryExcel) {
+                Generando...
+              } @else {
+                Generar Excel
+              }
+            </button>
+          </div>
         </div>
 
         @if (inventoryErrorMessage) {

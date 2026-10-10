@@ -176,6 +176,17 @@
                 />
                 <span>Transferencia</span>
               </label>
+
+              <label class="payment-option">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="CREDITO"
+                  [(ngModel)]="selectedPaymentMethod"
+                  (ngModelChange)="onPaymentMethodChange($event)"
+                />
+                <span>Crédito</span>
+              </label>
             </div>
           </div>
 
@@ -287,9 +298,57 @@
           </strong>
         </div>
 
+        <div class="discount-field">
+          <label for="cashPaymentAmount">Pago en efectivo</label>
+          <input
+            id="cashPaymentAmount"
+            name="cashPaymentAmount"
+            type="number"
+            min="0"
+            step="1"
+            [ngModel]="cashPaymentAmount"
+            (ngModelChange)="onCashPaymentChange($event)"
+            [disabled]="processingSale"
+          />
+        </div>
+
+        <div class="discount-field">
+          <label for="transferPaymentAmount">Pago por transferencia</label>
+          <input
+            id="transferPaymentAmount"
+            name="transferPaymentAmount"
+            type="number"
+            min="0"
+            step="1"
+            [ngModel]="transferPaymentAmount"
+            (ngModelChange)="onTransferPaymentChange($event)"
+            [disabled]="processingSale"
+          />
+        </div>
+
+        @if (hasCredit) {
+          <div class="discount-field">
+            <label for="customerName">Nombre del cliente *</label>
+            <input
+              id="customerName"
+              name="customerName"
+              type="text"
+              maxlength="150"
+              [(ngModel)]="customerName"
+              [disabled]="processingSale"
+              placeholder="Nombre del cliente"
+            />
+          </div>
+        }
+
         <div class="summary-row">
-          <span>Pago</span>
-          <strong>{{ selectedPaymentMethod }}</strong>
+          <span>Total recibido</span>
+          <strong>{{ paidAmount | currency: 'COP' : 'symbol' : '1.0-0' }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Saldo pendiente</span>
+          <strong>{{ creditBalance | currency: 'COP' : 'symbol' : '1.0-0' }}</strong>
         </div>
       </div>
 
@@ -361,7 +420,7 @@
         <svg lucideTriangleAlert size="24" strokeWidth="1.8" aria-hidden="true"></svg>
       </div>
 
-      <h2>Producto no disponible</h2>
+      <h2>{{ productAlertTitle }}</h2>
 
       <p>
         {{ alertMessage }}

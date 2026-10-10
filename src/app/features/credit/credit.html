@@ -1,0 +1,312 @@
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
+
+  <main class="main-content">
+    <app-topbar></app-topbar>
+
+    <section class="credit-page">
+      <header class="page-header">
+        <div>
+          <h1>Créditos de clientes</h1>
+          <p>Consulta los saldos pendientes y registra abonos.</p>
+        </div>
+      </header>
+
+      @if (errorMessage && !showCashAlert) {
+        <div class="alert alert-error" role="alert">
+          <p>{{ errorMessage }}</p>
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="alert alert-success" role="status">
+          {{ successMessage }}
+        </div>
+      }
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <div class="summary-icon">
+            <span>CR</span>
+          </div>
+          <div>
+            <p>Créditos pendientes</p>
+            <h2>{{ pendingCredits.length }}</h2>
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <div class="summary-icon">
+            <span>$</span>
+          </div>
+          <div>
+            <p>Total por cobrar</p>
+            <h2>
+              {{ totalPending | currency: 'COP' : 'symbol' : '1.0-0' }}
+            </h2>
+          </div>
+        </article>
+      </div>
+
+      @if (loading && credits.length === 0) {
+        <div class="empty-state">
+          <h2>Cargando créditos</h2>
+          <p>Estamos consultando los saldos pendientes.</p>
+        </div>
+      } @else if (pendingCredits.length === 0) {
+        <div class="empty-state">
+          <h2>No hay créditos pendientes</h2>
+          <p>Cuando registres ventas a crédito, aparecerán aquí.</p>
+        </div>
+      } @else {
+        <section class="content-card credit-list-card">
+          <div class="card-header">
+            <div>
+              <h2>Deudas pendientes</h2>
+              <p>Selecciona un crédito para consultar su detalle.</p>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Venta</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th class="text-right">Saldo pendiente</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @for (credit of pendingCredits; track credit.id) {
+                  <tr class="credit-row" (click)="selectCredit(credit)">
+                    <td class="customer-cell">{{ credit.customerName }}</td>
+                    <td>#{{ credit.saleNumber }}</td>
+                    <td>{{ credit.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+                      <span
+                        class="status-badge"
+                        [class.status-partial]="credit.status === 'PARTIAL'"
+                      >
+                        {{ credit.status === 'PARTIAL' ? 'Abono parcial' : 'Pendiente' }}
+                      </span>
+                    </td>
+                    <td class="text-right amount-cell">
+                      {{ credit.balance | currency: 'COP' : 'symbol' : '1.0-0' }}
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="icon-button"
+                        title="Ver detalle del crédito"
+                        aria-label="Ver detalle del crédito"
+                        (click)="selectCredit(credit); $event.stopPropagation()"
+                      >
+                        <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+    </section>
+  </main>
+</div>
+
+@if (showCreditDetail && selectedCredit) {
+  <div class="modal-overlay" (click)="closeCreditDetail()">
+    <section
+      class="detail-modal credit-detail-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="creditDetailTitle"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <div>
+          <h2 id="creditDetailTitle">Detalle del crédito</h2>
+          <p>Información de la deuda y registro de abonos.</p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          title="Cerrar"
+          aria-label="Cerrar detalle del crédito"
+          (click)="closeCreditDetail()"
+        >
+          <svg lucideX size="18" strokeWidth="1.8" aria-hidden="true"></svg>
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-section">
+          <h3>Información general</h3>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Cliente</span>
+              <strong class="detail-value">{{ selectedCredit.customerName }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Número de venta</span>
+              <strong class="detail-value">#{{ selectedCredit.saleNumber }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Fecha de venta</span>
+              <strong class="detail-value">
+                {{ selectedCredit.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Estado del crédito</span>
+              <strong class="detail-value">
+                {{ selectedCredit.status === 'PARTIAL' ? 'Abono parcial' : 'Pendiente' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Valor inicial</span>
+              <strong class="detail-value">
+                {{ selectedCredit.initialAmount | currency: 'COP' : 'symbol' : '1.0-0' }}
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-label">Saldo pendiente</span>
+              <strong class="detail-value">
+                {{ selectedCredit.balance | currency: 'COP' : 'symbol' : '1.0-0' }}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>Registrar abono</h3>
+
+          <form (ngSubmit)="registerPayment()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="paymentAmount">Valor del abono</label>
+                <input
+                  id="paymentAmount"
+                  name="paymentAmount"
+                  type="number"
+                  min="1"
+                  step="1"
+                  [max]="selectedCredit.balance"
+                  [(ngModel)]="paymentAmount"
+                  required
+                  [disabled]="processingPayment || selectedCredit.balance <= 0"
+                  placeholder="Ingresa el monto"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="paymentMethodId">Método de pago</label>
+                <select
+                  id="paymentMethodId"
+                  name="paymentMethodId"
+                  [(ngModel)]="paymentMethodId"
+                  required
+                  [disabled]="processingPayment || selectedCredit.balance <= 0"
+                >
+                  <option [ngValue]="1">Efectivo</option>
+                  <option [ngValue]="2">Transferencia</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="primary-button"
+                [disabled]="
+                  processingPayment ||
+                  selectedCredit.balance <= 0 ||
+                  paymentAmount <= 0 ||
+                  paymentAmount > selectedCredit.balance
+                "
+              >
+                {{ processingPayment ? 'Registrando...' : 'Registrar abono' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="detail-section payment-history">
+          <h3>Historial de abonos</h3>
+
+          @if (selectedCredit.payments.length === 0) {
+            <div class="empty-state compact">
+              <p>Este crédito todavía no tiene abonos.</p>
+            </div>
+          } @else {
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Método</th>
+                    <th>Usuario</th>
+                    <th class="text-right">Valor</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @for (payment of selectedCredit.payments; track payment.id) {
+                    <tr>
+                      <td>
+                        {{ payment.paymentDate | date: 'dd/MM/yyyy HH:mm' }}
+                      </td>
+                      <td>{{ payment.paymentMethodName }}</td>
+                      <td>{{ payment.username }}</td>
+                      <td class="text-right">
+                        {{ payment.amount | currency: 'COP' : 'symbol' : '1.0-0' }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <div></div>
+        <div class="modal-action-right">
+          <button type="button" class="secondary-button" (click)="closeCreditDetail()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+}
+
+<!-- ALERTA: CAJA NO ABIERTA -->
+@if (showCashAlert) {
+  <div class="alert-overlay">
+    <div class="alert-modal" role="alertdialog" aria-labelledby="cashAlertTitle">
+      <div class="alert-icon warning">
+        <svg lucideTriangleAlert size="24" strokeWidth="1.8" aria-hidden="true"></svg>
+      </div>
+
+      <h2 id="cashAlertTitle">Caja no abierta</h2>
+
+      <p>{{ alertMessage }}</p>
+
+      <button type="button" class="primary-button" (click)="goToCashRegister()">Ir a Caja</button>
+    </div>
+  </div>
+}

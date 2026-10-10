@@ -21,6 +21,18 @@ export interface SalesHistoryPayment {
   paymentDate: string;
 }
 
+export interface SalesHistoryCreditPayment {
+  id: number;
+  creditAccountId: number;
+  cashRegisterId: number;
+  userId: number;
+  username: string;
+  paymentMethodId: number;
+  paymentMethodName: string;
+  amount: number;
+  paymentDate: string;
+}
+
 export interface SalesHistorySale {
   id: number;
   saleNumber: number;
@@ -31,6 +43,10 @@ export interface SalesHistorySale {
   subtotal: number;
   discount: number;
   total: number;
+  customerName: string | null;
+  paidAmount: number;
+  creditBalance: number;
+  creditStatus: string | null;
   status: string;
   cancellationReason: string | null;
   cancelledAt: string | null;
@@ -38,6 +54,7 @@ export interface SalesHistorySale {
   cancelledByUsername: string | null;
   items: SalesHistoryItem[];
   payments: SalesHistoryPayment[];
+  creditPayments: SalesHistoryCreditPayment[];
 }
 
 export interface SaleCancellationRequest {

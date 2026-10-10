@@ -563,3 +563,61 @@ tbody tr:hover {
   justify-content: center;
   gap: 8px;
 }
+
+/* Información de la cuenta de crédito */
+.credit-detail-grid {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid #eee8e2;
+  border-radius: 10px;
+  background: #fcfbf9;
+}
+
+.credit-detail-grid .detail-item {
+  min-width: 0;
+  background: #fff;
+}
+
+.credit-detail-grid .detail-item span {
+  display: block;
+  margin-bottom: 2px;
+  line-height: 1.5;
+}
+
+.credit-detail-grid .detail-item strong {
+  display: block;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.credit-detail-grid .detail-item .detail-total {
+  color: #9d7623;
+  font-size: 17px;
+}
+
+.credit-status {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px !important;
+}
+
+.credit-status-pending {
+  color: #8a6116;
+  background: #fff0cc;
+}
+
+.credit-status-partial {
+  color: #80521b;
+  background: #f8e8d2;
+}
+
+.credit-status-paid {
+  color: #286a45;
+  background: #e2f2e8;
+}
+
+.credit-status-cancelled {
+  color: #8f392d;
+  background: #f4e2df;
+}

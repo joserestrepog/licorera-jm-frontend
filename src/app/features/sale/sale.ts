@@ -71,6 +71,10 @@ export class SaleComponent implements OnInit, AfterViewInit {
 
   selectedPaymentMethod = 'EFECTIVO';
 
+  cashPaymentAmount = 0;
+  transferPaymentAmount = 0;
+  customerName = '';
+
   showCashAlert = false;
   showProductAlert = false;
   showStockAlert = false;
@@ -79,6 +83,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
   showSaleSuccess = false;
 
   alertMessage = '';
+  productAlertTitle = 'Producto no disponible';
 
   canSell = false;
 
@@ -130,6 +135,26 @@ export class SaleComponent implements OnInit, AfterViewInit {
   onPaymentMethodChange(value: string): void {
     this.selectedPaymentMethod = value;
     this.saleService.setPaymentMethod(value);
+  }
+
+  onCashPaymentChange(value: number): void {
+    this.cashPaymentAmount = Math.max(Number(value) || 0, 0);
+  }
+
+  onTransferPaymentChange(value: number): void {
+    this.transferPaymentAmount = Math.max(Number(value) || 0, 0);
+  }
+
+  get paidAmount(): number {
+    return this.cashPaymentAmount + this.transferPaymentAmount;
+  }
+
+  get creditBalance(): number {
+    return Math.max(this.total - this.paidAmount, 0);
+  }
+
+  get hasCredit(): boolean {
+    return this.creditBalance > 0;
   }
 
   ngAfterViewInit(): void {
@@ -212,6 +237,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
 
   processBarcode(): void {
     if (!this.canSell) {
+      this.productAlertTitle = 'Producto no disponible';
       this.showCashAlert = true;
       this.alertMessage = 'Para realizar una venta debes abrir una caja primero.';
       return;
@@ -365,14 +391,50 @@ export class SaleComponent implements OnInit, AfterViewInit {
     if (this.saleItems.length === 0) {
       this.processingSale = false;
       this.showSaleConfirmation = false;
+      this.productAlertTitle = 'Venta incompleta';
       this.showProductAlert = true;
       this.alertMessage = 'Debes agregar al menos un producto a la venta.';
       return;
     }
 
+    if (this.cashPaymentAmount < 0 || this.transferPaymentAmount < 0) {
+      this.productAlertTitle = 'Datos de pago inválidos';
+      this.showProductAlert = true;
+      this.alertMessage = 'Los montos de pago no pueden ser negativos.';
+      return;
+    }
+
+    if (this.paidAmount > this.total) {
+      this.productAlertTitle = 'Datos de pago inválidos';
+      this.showProductAlert = true;
+      this.alertMessage = 'El total pagado no puede superar el total de la venta.';
+      return;
+    }
+
+    if (this.hasCredit && !this.customerName.trim()) {
+      this.productAlertTitle = 'Datos del cliente incompletos';
+      this.showProductAlert = true;
+      this.alertMessage = 'Debes indicar el nombre del cliente cuando la venta queda a crédito.';
+      return;
+    }
+
     this.processingSale = true;
 
-    const paymentMethodId = this.selectedPaymentMethod === 'TRANSFERENCIA' ? 2 : 1;
+    const payments = [];
+
+    if (this.cashPaymentAmount > 0) {
+      payments.push({
+        paymentMethodId: 1,
+        amount: this.cashPaymentAmount,
+      });
+    }
+
+    if (this.transferPaymentAmount > 0) {
+      payments.push({
+        paymentMethodId: 2,
+        amount: this.transferPaymentAmount,
+      });
+    }
 
     const request = {
       cashRegisterId: this.openCashRegisterId,
@@ -384,13 +446,8 @@ export class SaleComponent implements OnInit, AfterViewInit {
       })),
 
       discount: this.discount,
-
-      payments: [
-        {
-          paymentMethodId,
-          amount: this.total,
-        },
-      ],
+      payments,
+      customerName: this.hasCredit ? this.customerName.trim() : null,
     };
 
     console.log('Venta enviada al backend:', request);
@@ -425,6 +482,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
         }
 
         this.showSaleConfirmation = false;
+        this.productAlertTitle = 'No se pudo registrar la venta';
         this.showProductAlert = true;
         this.alertMessage = message;
 
@@ -437,6 +495,9 @@ export class SaleComponent implements OnInit, AfterViewInit {
     this.saleItems = [];
     this.discount = 0;
     this.barcode = '';
+    this.cashPaymentAmount = 0;
+    this.transferPaymentAmount = 0;
+    this.customerName = '';
 
     this.saleService.clearDraft();
 
@@ -462,6 +523,7 @@ export class SaleComponent implements OnInit, AfterViewInit {
     }
 
     if (this.saleItems.length === 0) {
+      this.productAlertTitle = 'Venta incompleta';
       this.showProductAlert = true;
       this.alertMessage = 'Debes agregar al menos un producto a la venta.';
       return;
@@ -474,6 +536,17 @@ export class SaleComponent implements OnInit, AfterViewInit {
     if (this.discount > this.subtotal) {
       this.discount = this.subtotal;
     }
+
+    this.cashPaymentAmount = this.selectedPaymentMethod === 'EFECTIVO' ? this.total : 0;
+
+    this.transferPaymentAmount = this.selectedPaymentMethod === 'TRANSFERENCIA' ? this.total : 0;
+
+    if (this.selectedPaymentMethod === 'CREDITO') {
+      this.cashPaymentAmount = 0;
+      this.transferPaymentAmount = 0;
+    }
+
+    this.customerName = '';
 
     this.saveSaleDraft();
 

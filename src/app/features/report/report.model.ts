@@ -7,6 +7,18 @@ export interface SalesReport {
   profit: number;
 }
 
+export interface CollectionsReport {
+  salePaymentsTotal: number;
+  salePaymentsCash: number;
+  salePaymentsTransfer: number;
+  creditPaymentsTotal: number;
+  creditPaymentsCash: number;
+  creditPaymentsTransfer: number;
+  totalCollected: number;
+  cashCollected: number;
+  transferCollected: number;
+}
+
 export interface SalesByProduct {
   productId: number;
   productName: string;
@@ -36,4 +48,17 @@ export interface SalesByDay {
   total: number;
   totalCost: number;
   profit: number;
+}
+
+export interface CollectionsByDay {
+  collectionDate: string;
+  salePaymentsTotal: number;
+  salePaymentsCash: number;
+  salePaymentsTransfer: number;
+  creditPaymentsTotal: number;
+  creditPaymentsCash: number;
+  creditPaymentsTransfer: number;
+  totalCollected: number;
+  cashCollected: number;
+  transferCollected: number;
 }

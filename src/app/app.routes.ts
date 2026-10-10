@@ -40,6 +40,11 @@ export const routes: Routes = [
       import('./features/cash-register/cash-register').then((m) => m.CashRegisterComponent),
   },
   {
+    path: 'credit',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/credit/credit').then((m) => m.CreditComponent),
+  },
+  {
     path: 'sales-history',
     canActivate: [authGuard, adminGuard],
     loadComponent: () =>

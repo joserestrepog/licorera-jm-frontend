@@ -217,9 +217,10 @@
           </div>
         }
 
-        <h3>Pagos</h3>
+        <h3>Pagos iniciales</h3>
+
         @if (selectedSale.payments.length === 0) {
-          <p class="muted-text">Esta venta no tiene pagos asociados.</p>
+          <p class="muted-text">Esta venta no tiene pagos iniciales registrados.</p>
         } @else {
           <div class="table-container detail-table-container">
             <table class="detail-table">
@@ -235,12 +236,92 @@
                   <tr>
                     <td>{{ payment.paymentMethodName }}</td>
                     <td>{{ payment.paymentDate | date: 'dd/MM/yyyy, HH:mm' }}</td>
-                    <td>{{ payment.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                    <td>
+                      {{ payment.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                    </td>
                   </tr>
                 }
               </tbody>
             </table>
           </div>
+        }
+
+        @if (selectedSale.creditStatus) {
+          <h3>Estado de la cuenta de crédito</h3>
+
+          <div class="detail-grid credit-detail-grid">
+            <div class="detail-item">
+              <span>Cliente</span>
+              <strong>{{ selectedSale.customerName || 'No especificado' }}</strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Estado de la deuda</span>
+              <strong
+                class="credit-status"
+                [class.credit-status-pending]="selectedSale.creditStatus === 'PENDING'"
+                [class.credit-status-partial]="selectedSale.creditStatus === 'PARTIAL'"
+                [class.credit-status-paid]="selectedSale.creditStatus === 'PAID'"
+                [class.credit-status-cancelled]="selectedSale.creditStatus === 'CANCELLED'"
+              >
+                @switch (selectedSale.creditStatus) {
+                  @case ('PENDING') {
+                    Pendiente
+                  }
+                  @case ('PARTIAL') {
+                    Abonada parcialmente
+                  }
+                  @case ('PAID') {
+                    Pagada
+                  }
+                  @case ('CANCELLED') {
+                    Cancelada
+                  }
+                  @default {
+                    {{ selectedSale.creditStatus }}
+                  }
+                }
+              </strong>
+            </div>
+
+            <div class="detail-item">
+              <span>Saldo pendiente</span>
+              <strong class="detail-total">
+                {{ selectedSale.creditBalance | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </strong>
+            </div>
+          </div>
+
+          <h3>Abonos a crédito</h3>
+
+          @if (selectedSale.creditPayments.length === 0) {
+            <p class="muted-text">Esta cuenta todavía no tiene abonos registrados.</p>
+          } @else {
+            <div class="table-container detail-table-container">
+              <table class="detail-table">
+                <thead>
+                  <tr>
+                    <th>Método de pago</th>
+                    <th>Fecha</th>
+                    <th>Responsable</th>
+                    <th>Valor del abono</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (payment of selectedSale.creditPayments; track payment.id) {
+                    <tr>
+                      <td>{{ payment.paymentMethodName }}</td>
+                      <td>{{ payment.paymentDate | date: 'dd/MM/yyyy, HH:mm' }}</td>
+                      <td>{{ payment.username }}</td>
+                      <td>
+                        {{ payment.amount | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
         }
 
         @if (selectedSale.status === 'CANCELLED') {

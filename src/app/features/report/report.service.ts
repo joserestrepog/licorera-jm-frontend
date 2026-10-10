@@ -2,7 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { InventoryStock, SalesByDay, SalesByProduct, SalesReport } from './report.model';
+import {
+  CollectionsByDay,
+  CollectionsReport,
+  InventoryStock,
+  SalesByDay,
+  SalesByProduct,
+  SalesReport,
+} from './report.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,10 +21,7 @@ export class ReportService {
 
   getSalesSummary(from: string, to: string): Observable<SalesReport> {
     return this.http.get<SalesReport>(`${this.apiUrl}/sales/summary`, {
-      params: {
-        from,
-        to,
-      },
+      params: { from, to },
     });
   }
 
@@ -29,10 +33,19 @@ export class ReportService {
 
   getSalesByProduct(from: string, to: string): Observable<SalesByProduct[]> {
     return this.http.get<SalesByProduct[]>(`${this.apiUrl}/sales/by-product`, {
-      params: {
-        from,
-        to,
-      },
+      params: { from, to },
+    });
+  }
+
+  getCollectionsSummary(from: string, to: string): Observable<CollectionsReport> {
+    return this.http.get<CollectionsReport>(`${this.apiUrl}/collections/summary`, {
+      params: { from, to },
+    });
+  }
+
+  getCollectionsByDay(from: string, to: string): Observable<CollectionsByDay[]> {
+    return this.http.get<CollectionsByDay[]>(`${this.apiUrl}/collections/by-day`, {
+      params: { from, to },
     });
   }
 

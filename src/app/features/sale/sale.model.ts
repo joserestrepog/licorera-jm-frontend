@@ -34,4 +34,5 @@ export interface SaleRequest {
   items: SaleItemRequest[];
   discount: number;
   payments: SalePaymentRequest[];
+  customerName?: string | null;
 }
