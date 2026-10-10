@@ -606,3 +606,7 @@ tbody tr:hover {
     padding: 16px 20px;
   }
 }
+
+.table-container tbody tr.clickable-row {
+  cursor: pointer;
+}

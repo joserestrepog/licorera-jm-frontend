@@ -305,7 +305,7 @@
 
               <tbody>
                 @for (entry of entries; track entry.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="openEntryDetail(entry)">
                     <td>{{ entry.productName }}</td>
 
                     <td>{{ entry.barcode }}</td>
@@ -327,7 +327,7 @@
                         type="button"
                         class="action-button view-button"
                         title="Ver entrada"
-                        (click)="openEntryDetail(entry)"
+                        (click)="openEntryDetail(entry); $event.stopPropagation()"
                       >
                         <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                       </button>
@@ -460,23 +460,16 @@
 
         <div class="detail-section">
           <p>
-            Este producto está marcado como eliminado y no puede recibir
-            inventario mientras permanezca en ese estado.
+            Este producto está marcado como eliminado y no puede recibir inventario mientras
+            permanezca en ese estado.
           </p>
 
-          <p>
-            ¿Deseas habilitarlo nuevamente para registrar una nueva entrada
-            de inventario?
-          </p>
+          <p>¿Deseas habilitarlo nuevamente para registrar una nueva entrada de inventario?</p>
         </div>
       </div>
 
       <div class="modal-actions">
-        <button
-          type="button"
-          class="cancel-button"
-          (click)="cancelDeletedProductPrompt()"
-        >
+        <button type="button" class="cancel-button" (click)="cancelDeletedProductPrompt()">
           No, volver
         </button>
 
@@ -535,8 +528,7 @@
 
         <div class="detail-section">
           <p>
-            Este producto está inactivo. Para ingresar nuevas unidades,
-            primero debes activarlo.
+            Este producto está inactivo. Para ingresar nuevas unidades, primero debes activarlo.
           </p>
 
           <p>¿Deseas activarlo y continuar con el registro de inventario?</p>
@@ -544,11 +536,7 @@
       </div>
 
       <div class="modal-actions">
-        <button
-          type="button"
-          class="cancel-button"
-          (click)="cancelInactiveProductPrompt()"
-        >
+        <button type="button" class="cancel-button" (click)="cancelInactiveProductPrompt()">
           No, volver
         </button>
 

@@ -701,3 +701,7 @@ tbody tr:hover {
   display: block;
   flex-shrink: 0;
 }
+
+.table-container tbody tr.clickable-row {
+  cursor: pointer;
+}

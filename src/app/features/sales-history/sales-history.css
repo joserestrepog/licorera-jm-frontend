@@ -621,3 +621,7 @@ tbody tr:hover {
   color: #8f392d;
   background: #f4e2df;
 }
+
+.table-container tbody tr.clickable-row {
+  cursor: pointer;
+}

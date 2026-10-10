@@ -167,7 +167,7 @@
 
               <tbody>
                 @for (category of filteredCategories; track category.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="openCategoryDetail(category)">
                     <td>
                       <div class="category-name">
                         {{ category.name }}
@@ -192,7 +192,7 @@
                           type="button"
                           class="action-button view-button"
                           title="Ver categoría"
-                          (click)="openCategoryDetail(category)"
+                          (click)="openCategoryDetail(category); $event.stopPropagation()"
                         >
                           <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                         </button>
@@ -201,7 +201,7 @@
                           type="button"
                           class="action-button edit-button"
                           title="Editar categoría"
-                          (click)="openEditForm(category)"
+                          (click)="openEditForm(category); $event.stopPropagation()"
                         >
                           <svg
                             lucidePencil

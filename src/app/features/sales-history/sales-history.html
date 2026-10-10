@@ -72,7 +72,7 @@
 
                 <tbody>
                   @for (sale of filteredSales; track trackBySaleId($index, sale)) {
-                    <tr>
+                    <tr class="clickable-row" (click)="openSaleDetail(sale)">
                       <td class="sale-number">#{{ sale.saleNumber }}</td>
                       <td>{{ sale.saleDate | date: 'dd/MM/yyyy, HH:mm' }}</td>
                       <td>{{ sale.username }}</td>
@@ -96,7 +96,7 @@
                             class="action-button view-button"
                             title="Ver detalle"
                             aria-label="Ver detalle de la venta"
-                            (click)="openSaleDetail(sale)"
+                            (click)="openSaleDetail(sale); $event.stopPropagation()"
                           >
                             <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                           </button>
@@ -107,7 +107,7 @@
                               class="action-button cancel-action-button"
                               title="Cancelar venta"
                               aria-label="Cancelar venta"
-                              (click)="openCancelDialog(sale)"
+                              (click)="openCancelDialog(sale); $event.stopPropagation()"
                             >
                               <svg lucideX [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                             </button>

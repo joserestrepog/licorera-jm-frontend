@@ -253,7 +253,7 @@
 
               <tbody>
                 @for (user of filteredUsers; track user.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="openUserDetail(user)">
                     <td>
                       <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
                     </td>
@@ -282,7 +282,7 @@
                           type="button"
                           class="action-button view-button"
                           title="Ver usuario"
-                          (click)="openUserDetail(user)"
+                          (click)="openUserDetail(user); $event.stopPropagation()"
                         >
                           <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
@@ -291,7 +291,7 @@
                           type="button"
                           class="action-button edit-button"
                           title="Editar usuario"
-                          (click)="openEditForm(user)"
+                          (click)="openEditForm(user); $event.stopPropagation()"
                         >
                           <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>

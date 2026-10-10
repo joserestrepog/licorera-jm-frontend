@@ -386,7 +386,7 @@
 
               <tbody>
                 @for (cashRegister of filteredCashRegisters; track cashRegister.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="openCashRegisterDetail(cashRegister)">
                     <td>
                       <div class="cash-user">
                         {{ cashRegister.username }}
@@ -437,7 +437,7 @@
                           type="button"
                           class="action-button view-button"
                           title="Ver caja"
-                          (click)="openCashRegisterDetail(cashRegister)"
+                          (click)="openCashRegisterDetail(cashRegister); $event.stopPropagation()"
                         >
                           <svg lucideEye [size]="18" [strokeWidth]="1.8" aria-hidden="true"></svg>
                         </button>
@@ -447,7 +447,7 @@
                             type="button"
                             class="action-button close-action-button"
                             title="Cerrar caja"
-                            (click)="openCloseForm(cashRegister)"
+                            (click)="openCloseForm(cashRegister); $event.stopPropagation()"
                           >
                             <svg
                               lucideLockKeyhole

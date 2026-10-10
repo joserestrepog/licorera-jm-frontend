@@ -705,3 +705,7 @@
     width: 100%;
   }
 }
+
+.table-container tbody tr.clickable-row {
+  cursor: pointer;
+}

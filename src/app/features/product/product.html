@@ -272,7 +272,7 @@
 
               <tbody>
                 @for (product of filteredProducts; track product.id) {
-                  <tr>
+                  <tr class="clickable-row" (click)="openProductDetail(product)">
                     <td>
                       <div class="product-name">
                         {{ product.name }}
@@ -321,7 +321,7 @@
                           type="button"
                           class="action-button view-button"
                           title="Ver producto"
-                          (click)="openProductDetail(product)"
+                          (click)="openProductDetail(product); $event.stopPropagation()"
                         >
                           <svg lucideEye size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                         </button>
@@ -331,7 +331,7 @@
                             type="button"
                             class="action-button edit-button"
                             title="Editar producto"
-                            (click)="openEditForm(product)"
+                            (click)="openEditForm(product); $event.stopPropagation()"
                           >
                             <svg lucidePencil size="18" strokeWidth="1.8" aria-hidden="true"></svg>
                           </button>
