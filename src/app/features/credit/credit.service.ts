@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+﻿import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -9,7 +9,7 @@ import { CreditAccount, CreditPayment, CreditPaymentRequest } from './credit.mod
 })
 export class CreditService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/credits';
+  private readonly apiUrl = '/api/credits';
 
   getCredits(): Observable<CreditAccount[]> {
     return this.http.get<CreditAccount[]>(this.apiUrl);
@@ -26,3 +26,4 @@ export class CreditService {
     return this.http.post<CreditPayment>(`${this.apiUrl}/${creditAccountId}/payments`, request);
   }
 }
+
